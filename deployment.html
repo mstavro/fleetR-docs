@@ -386,7 +386,19 @@ permissions:
 </ul>
 <p>The best advice for troubleshooting is to check the logs by going to your repo, going to “Actions,” and clicking on a failed deployment. Here’s an example:</p>
 <p><img src="assets/failed_deployment_example.png" class="img-fluid"></p>
-<p>Here, <code>tbl$destination_plausible</code> is missing, likely because no aircraft were returned from our API functions. Similar errors include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely due to a missing table.</p>
+<p>Here, <code>tbl$destination_plausible</code> is missing, .</p>
+<p>Other errors you might encounter include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely because no aircraft were returned from our API functions; an unlucky draw. Again, you can mitigate this by increasing the number of aircraft you pull.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Note that if you <em>do</em> increase the number of aircraft you want to pull, you’ll likely need to add some cooldown time between your API requests, else you’ll run into a rate limit of the OpenSky API. In our box analogy, the OpenSky team doesn’t want you rolling up to their box, scooping up a bunch of stuff and then running off with it. It’s almost Halloween as of the time of writing, and it wouldn’t be very courteous of you to take the whole bowl of candy when there’s a line of people taking only a few pieces at once. The same goes for our API access.</p>
+<p>When you do get rate limited, you’ll probably get a 429/503 response. <code>req_perform()</code> actually retries by default if it encounters this code, but you’ll probably just get a 429 again if you’ve burned up too many requests in a time window. In that case, I’d recommend taking a look at <code>req_throttle()</code> and its <a href="https://httr2.r-lib.org/reference/req_throttle.html">documentation</a>.</p>
+</div>
+</div>
+</div>
 </section>
 </section>
 <section id="updating-fleet-info" class="level3" data-number="6.2.2">
