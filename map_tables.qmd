@@ -1272,7 +1272,7 @@ united_10_positions <- bind_rows(
   st_as_sf()
 ```
 
-```united_explore_10``` simply picks 10 random flights to query from the ```compatible_registrations``` list, which we made in @sec-get-fleet. That's because, up until we made that list, we didn't actually have the information necessary to comprehensively pull from United's active mainline fleet. And the reason we're only pulling 10 is further documented in @sec-tolled-boxes, but basically the long-and-short is we have limited API credits, and we can't just pull the whole fleet, so a random sample of 10 is the compromise I landed on. The API limit is also why I'm demonstrating/executing the code using static parquet files here in Quarto. You're free to adjust this as you like, just make sure to change the ```slice_sample(n = 10)``` row, or, if you're feeling adventurous, delete it entirely I guess. As they say, enjoy responsibly.
+```united_explore_10``` simply picks 10 random flights to query from the ```compatible_registrations``` list, which we made in @sec-fleet. That's because, up until we made that list, we didn't actually have the information necessary to comprehensively pull from United's active mainline fleet. And the reason we're only pulling 10 is further documented in @sec-tolled-boxes, but basically the long-and-short is we have limited API credits, and we can't just pull the whole fleet, so a random sample of 10 is the compromise I landed on. The API limit is also why I'm demonstrating/executing the code using static parquet files here in Quarto. You're free to adjust this as you like, just make sure to change the ```slice_sample(n = 10)``` row, or, if you're feeling adventurous, delete it entirely I guess. As they say, enjoy responsibly.
 
 :::
 

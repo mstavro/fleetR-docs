@@ -30,7 +30,6 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./summary.html" rel="next">
 <link href="./map_tables.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -146,18 +145,6 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
   </div>
 </li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
-  </div>
-</li>
     </ul>
     </div>
 </nav>
@@ -172,6 +159,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#sec-deployment" id="toc-sec-deployment" class="nav-link" data-scroll-target="#sec-deployment"><span class="header-section-number">5.2</span> Setting up GitHub Pages and GitHub Actions</a>
   <ul class="collapse">
   <li><a href="#github-pages" id="toc-github-pages" class="nav-link" data-scroll-target="#github-pages"><span class="header-section-number">5.2.1</span> GitHub Pages</a></li>
+  <li><a href="#updating-fleet-info" id="toc-updating-fleet-info" class="nav-link" data-scroll-target="#updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -201,8 +189,8 @@ ul.task-list li input[type="checkbox"] {
 <p>We’re at the last part. We laugh, we cried, we made some friends along the way - okay, we didn’t do any of that. We did make a lot of tables, though. Now all that’s left is sharing them with the world.</p>
 <section id="putting-into-quarto-and-styling" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="putting-into-quarto-and-styling"><span class="header-section-number">5.1</span> Putting into Quarto and Styling</h2>
-<p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 5.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
-<p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a>, but here’s the full SCSS you might want to have:</p>
+<p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 4.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
+<p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a>, but here’s the full SCSS you might want to have:</p>
 <pre><code>$navbar-bg: black;
 $navbar-fg: white;
 
@@ -303,8 +291,176 @@ website:
   favicon: https://www.united.com/2500e4e62233fbfe8ac6.unitedLogoNew.svg</code></pre>
 <p>You can then set up pages:</p>
 <p><code>usethis::use_github_pages()</code></p>
+<p>… and run this command in the terminal:</p>
+<pre><code>quarto publish gh-pages</code></pre>
 <p>Your Quarto doc will render for its initial deployment to pages. If you’re overly eager like me, you might’ve changed your “Pages” setting to “Deploy from GitHub Actions” - <strong>change it back</strong> to “Deploy from a branch” if that’s the case, and make sure it’s deploying from “gh-pages” (unless you changed the defaults set by <code>use_github_pages()</code>).</p>
-<p>After the initial render, you should have your first deployment! Hooray! But how do we get it to continuously deploy?</p>
+<p>After the initial render, you should have your first deployment! Hooray! But how do we get it to continuously deploy? Enter GitHub actions.</p>
+<p>I’ve set up an action file called <code>render.yml</code>, which looks something like this:</p>
+<pre><code>name: Pull flights, render, and publish
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Install quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+          
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<p>And the anatomy of this action is as such:</p>
+<pre><code>name: Pull flights, render, and publish
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+permissions:
+  contents: write</code></pre>
+<p><code>name:</code> a name for the action that shows up in GitHub</p>
+<p><code>on:</code> creates the conditions under which the action runs: - The workflow activates every 30 minutes (you can use <a href="crontab.guru">crontab.guru</a> for help writing cron jobs) - The workflow activates on a workflow dispatch button which appears in GitHub under the “Actions” section of your repository - Gives the action write permissions, which allows it to write the changes to GitHub pages</p>
+<pre><code>jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Install quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+          
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<p><code>jobs:</code> actually specifies what’s going to take place: - The “runner”, aka, the Microsoft Azure Ubuntu Linux container running the job, will grab your repo and start working on it - The runner will install R - The runner will then set up dependencies (packages) based on what it detects in your scripts - The runner will set up Quarto - Finally, the runner will render your Quarto document, and publish to GitHub pages, because you have specified:</p>
+<pre><code>        with:
+          target: gh-pages</code></pre>
+<p>Additionally, your runner will actually be able to render your document because you’ve supplied:</p>
+<pre><code>        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<section id="troubleshooting" class="level4" data-number="5.2.1.1">
+<h4 data-number="5.2.1.1" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">5.2.1.1</span> Troubleshooting</h4>
+<p>Chances are, you’re going to run into some obstacles. I hope that providing you with the .yml will mitigate this somewhat, but here’s some general notes about failed deployments using this code:</p>
+<ul>
+<li>Some failed deployments are normal. The solution proposed in <a href="data_sources.html#sec-tolled-boxes" class="quarto-xref"><span>Section 2.1.1</span></a> relies, partly, on chance, in the sense that you’ll actually pull live aircraft. You may very well pull a segment of aircraft that are all sitting on the ground in a given moment. In this case, the Quarto script fails on purpose because there’s nothing to visualize. And it’s entirely possible that you could have long stints where you pull nothing, just because you’re pulling the wrong aircraft on the network. The best solution here is just to take a larger cross section of aircraft, perhaps trading off on the refresh period (i.e., 30/40 aircraft every hour, on the hour).</li>
+<li>You rotated your credentials and forgot to update them (me).</li>
+<li>You haven’t successfully rendered the Quarto page at least once locally with <code>usethis::use_gh_pages()</code></li>
+</ul>
+<p>The best advice for troubleshooting is to check the logs by going to your repo, going to “Actions,” and clicking on a failed deployment. Here’s an example:</p>
+<p><img src="assets/failed_deployment_example.png" class="img-fluid"></p>
+<p>Here, <code>tbl$destination_plausible</code> is missing, likely because no aircraft were returned from our API functions. Similar errors include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely due to a missing table.</p>
+</section>
+</section>
+<section id="updating-fleet-info" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</h3>
+<p>The last piece is automatically refreshing the fleet info from Google Sheets. We’ll use a separate actions <code>.yml</code> file for that called <code>update_ua_fleet.yml</code>.</p>
+<pre><code>name: Check for changes to the United mainline fleet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 12 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Execute the script
+      - name: Query changes to United fleet and update active registrations
+        run: Rscript rebuild_fleet_info.R
+
+      # Commit changes to csv back to the repo
+      - uses: stefanzweifel/git-auto-commit-action@v5</code></pre>
+<p>Let’s walk through this one like the last:</p>
+<pre><code>name: Check for changes to the United mainline fleet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 12 * * *'
+
+permissions:
+  contents: write</code></pre>
+<p><code>name:</code> sets the name we see in GitHub for this action.</p>
+<p><code>on:</code> does the following:</p>
+<ul>
+<li>lets us trigger the action using the workflow dispatch button in actions</li>
+<li>runs this job at 12:05 UTC daily</li>
+</ul>
+<p><code>permissions:</code> enables the runner to write; specifically, it’ll write <code>"data/united_full_fleet_info.csv"</code> and <code>""data/compatible_registrations.csv""</code></p>
+<pre><code>jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Execute the script
+      - name: Query changes to United fleet and update active registrations
+        run: Rscript rebuild_fleet_info.R
+
+      # Commit changes to csv back to the repo
+      - uses: stefanzweifel/git-auto-commit-action@v5</code></pre>
+<p><code>jobs:</code> everything’s the same here with the exception of the last two:</p>
+<ul>
+<li><code>run: Rscript rebuild_fleet_info.R</code> will run our R script</li>
+<li><code>uses: stefanzweifel/git-auto-commit-action@v5</code> will commit the changes the runner makes, i.e., writing the updated CSVs, to the repo</li>
+</ul>
+<p>… and that should be all you need to know on the deployment side! You can create these actions by going to the Actions tab under your repo.</p>
 
 
 </section>
@@ -724,9 +880,6 @@ website:
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./summary.html" class="pagination-link" aria-label="Summary">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Summary</span></span> <i class="bi bi-arrow-right-short"></i>
-      </a>
   </div>
 </nav>
 </div> <!-- /content -->

@@ -122,6 +122,12 @@ You can then set up pages:
 
 ```usethis::use_github_pages()```
 
+... and run this command in the terminal:
+
+```
+quarto publish gh-pages
+```
+
 Your Quarto doc will render for its initial deployment to pages. If you're overly eager like me, you might've changed your "Pages" setting to "Deploy from GitHub Actions" - **change it back** to "Deploy from a branch" if that's the case, and make sure it's deploying from "gh-pages" (unless you changed the defaults set by ```use_github_pages()```).
 
 After the initial render, you should have your first deployment! Hooray! But how do we get it to continuously deploy? Enter GitHub actions.

@@ -10,12 +10,9 @@ book:
     - intro.qmd
     - data_sources.qmd
     - get_data.qmd
+    - fleet_data.qmd
     - map_tables.qmd
     - deployment.qmd
-    - summary.qmd
-    - references.qmd
-
-bibliography: references.bib
 
 format:
   html:
@@ -23,8 +20,6 @@ format:
       - cosmo
       - brand
       - united.scss
-  pdf:
-    documentclass: scrreprt
 
 
 

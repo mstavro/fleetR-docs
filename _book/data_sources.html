@@ -136,26 +136,14 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./deployment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">deployment.html</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./summary.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="./references.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">References</span></a>
+  <a href="./deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
   </div>
 </li>
     </ul>
@@ -263,7 +251,7 @@ ul.task-list li input[type="checkbox"] {
 <p>Sometimes you only recognize obstacles when you’re in the middle of development. That’s pretty much what happened to me when I was querying route data using the ADSBDB API. The ADSBDB API pulls route information from a database maintained by volunteer contributors. The problem is that operations staff at United Airlines change their minds quicker than volunteer contributors can keep up, so said route information often falls out of date. That’s fine, but it would be nice to mitigate this somehow. So I went back into the world and searched for an API with more information.</p>
 <p>I ended up finding adsb.lol’s API which provides similar route information, this time from a GitHub repo with (ostensibly) more regular updates than ADSBDB. One key element that this API included were two columns: <em>origin_plausible</em> and <em>destination_plausible</em>, two binary columns indicating whether a given origin and destination airport made sense in the context of a given aircraft’s activity. Despite this, the data still isn’t perfect.</p>
 <p>As such, the trade-off is whether to omit data entirely due to lack of reliability. Sometimes route information is correct, sometimes it isn’t. Sometimes implausible route information is correct, and sometimes plausible route information is incorrect, making the errant information hard to isolate.</p>
-<p>Luckily, adsb.lol provided somewhat of an off-ramp to this concern: given the <em>plausible</em> columns, I can serve different versions of a table based on whether the route information is flagged as plausible or not. Given that even plausible information can still be incorrect, I’ll provide a disclaimer for that information as well. The technical implementation of this is demonstrated in <a href="map_tables.html" class="quarto-xref"><span>Chapter 5</span></a>.</p>
+<p>Luckily, adsb.lol provided somewhat of an off-ramp to this concern: given the <em>plausible</em> columns, I can serve different versions of a table based on whether the route information is flagged as plausible or not. Given that even plausible information can still be incorrect, I’ll provide a disclaimer for that information as well. The technical implementation of this is demonstrated in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a>.</p>
 
 
 </section>
