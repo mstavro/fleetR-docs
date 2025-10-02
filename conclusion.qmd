@@ -1,0 +1,9 @@
+# Conclusion and Next Steps
+I hope this book's been somewhat insightful and that it was somewhat enjoyable to read. I had a lot of fun putting this project together, and I hope that whoever reads it gets some value out of it. I think it's always good to close with some thoughts on next steps and room for improvement:
+
+- Some of these functions would be cool to wrap in a package, or contribute to an existing package. I've come across the ```openSkies``` and the ```anyflights``` package. ```openSkies``` is fairly similar, though not exactly the same, so I do wonder whether some combination of these tables, maps, and API wrappers would be useful. TBD. ```fleetR``` already seems like a good name...
+- The geometries are still a little problematic, especially when crossing the date line as an aircraft may not necessarily generate ADS-B pings for a long period of time, which still seems to confuse ```sf``` even with the inclusion of ```st_wrap_dateline()```.
+- More fleets, could, of course, be added. Lufthansa seems like a fun extension. Though the issue of the credit limit remains...
+- The credit limit and being able to only select a subsection of the aircraft is a trade-off I'm not wholly satisfied with, but I think that's the limit of using open-source options. Presumably you'd be able to do a lot more with a paid API endpoint from a major service provider. I'm satisfied that this is still a proper proof of concept that can be scaled.
+
+If you've made it this far, thank you for reading! That's all of my thoughts for the time being. Go enjoy other parts of the world (or some more of my writing, whatever you prefer).

@@ -2,7 +2,7 @@ project:
   type: book
 
 book:
-  title: "United Explorer Project Documentation"
+  title: "fleetR: Airline Fleet Explorer Documentation"
   author: "Martin Stavro"
   date: "9/30/2025"
   chapters:
@@ -13,13 +13,14 @@ book:
     - fleet_data.qmd
     - map_tables.qmd
     - deployment.qmd
+    - conclusion.qmd
 
 format:
   html:
     theme:
       - cosmo
       - brand
-      - united.scss
+      - fleetR.scss
 
 
 
