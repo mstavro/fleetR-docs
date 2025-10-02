@@ -1,0 +1,22 @@
+# Coming Up With a Project Idea
+
+So, if you're like me, you'll see this table project and think to yourself:
+
+> What on Earth would I even make a table about?
+
+Great question. And it was the same question I asked myself up until about a week before the project deadline. Very confidence inspiring, I know. 
+
+I think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you're likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.[^1]
+
+## Why Track the United Fleet?
+I'm an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There's probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. 
+
+Web development for R also is an area of interest for me. I'm really impressed at how far the ecosystem stretches with Quarto and Shiny. What's more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It's kind of like snapping Lego bricks together.[^2] Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we're about to find out!
+
+Finally, I had the pleasure of attending the R in Production workshop at posit::conf(2025) which taught me a lot of cool things about, you guessed it, putting R in production. Neat things with GitHub Actions and moving away from the point and click approach of programming with R. This seems like a prime opportunity to put what I learned into practice![^3]
+
+[^1]: Or maybe you're one of those 10x coders who writes really good code and you can't relate to this point. To which I'll say good for you and mask the pang of jealousy that's clearly underlying my praise.
+
+[^2]: This analogy pretty much describes my entire career at this point. Hopefully I'll get to the stage where I can make my own proverbial Lego brick.
+
+[^3]: And maybe a worthy post scriptum, I met last year's winner in an elevator at posit conf and she encouraged me to give it a shot. Evidently I'm one of those personality types where I act on the slightest bit of challenge/encouragement...

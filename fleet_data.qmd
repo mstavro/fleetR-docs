@@ -1,0 +1,238 @@
+# Actually Getting Fleet Data (feat. googlesheets4) 
+Now that we've gotten our data from APIs, its time to get the icao24 addresses that will actually enable our functions to work.
+
+## Getting United's Fleet Data {#sec-fleet}
+
+The API section was a lot. I promise this section is a lot shorter.
+
+After all that work in the API section, we're ready to pull flight data from a series of icao24 values and... we don't have any icao24 values. Okay. Where are we going to get a comprehensive list of those for the United mainline fleet? Turns out it actually exists thanks to an open-source hobbyist effort at [this Google sheet](https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlview).
+
+What's the best way to go about grabbing this information? Glad you asked, there's a package for that: ```googlesheets4```. We'll make a new R script for the process of pulling the United fleet called ```rebuild_fleet_info.R``` so, when we get to @sec-deployment, we can update the list of active United mainline aircraft on a schedule.
+
+Reading this Google Sheet with ```googlesheets4``` is simple - all we need is the ID? Where's the ID you ask? Well, in this url:
+
+> https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlview
+
+It's that cat-walked-across-my-keyboard hodgepodge of letters between spreadsheets/d/ and /htmlview
+
+<iframe id="pageswitcher-content" frameborder="0" marginheight="0" marginwidth="0" src="https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlembed/sheet?headers=false&gid=0" style="display: block; width: 100%; height: 100%;"></iframe>
+
+In this spreadsheet, there's a bunch of sheets that are sort of similar but have small differences that make our lives a little bit difficult. For example, the header for A319 configurations says "Congfiguration" instead of "Configuration", and there are several other differences here and there. I'll save you the time of looking for the differences. All you need to know is that we'll use ```any_of()``` to check if any of the different header options shows up in a given sheet for columns with this type of variation. The second row in each sheet also doesn't have any machine readable data, at least not in a way that will severely complicate the column structure, so we'll get rid of it using ```slice(-1)```, since it'll be the first row after the header is processed. We'll also invoke ```gs_deauth()```. ```googlesheets4``` asks for an API key for some functions, but since we're just reading sheets, we don't need access to Google's API. We'll further coerce everything to character to make our lives easier when we try to ```bind_rows()``` in a second.
+
+```{r}
+united_fleet_info <- function(sheet) {
+  gs4_deauth()
+
+  read_sheet("1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo", sheet = sheet) |>
+    slice(-1) |>
+    rename(
+      aircraft_model = 1,
+      registration = `Reg #`,
+      any_of(
+        c(
+          delivered = "Delivery",
+          delivered = "Delivered",
+          delivered = "Delivery Yr",
+          delivered = "Delvr",
+          config = "Configuration",
+          config = "Congfiguration"
+        )
+      ),
+      ife = IFE,
+      wifi = WiFi,
+      power = Power
+    ) |>
+    select(
+      aircraft_model,
+      registration,
+      delivered,
+      config,
+      ife,
+      wifi,
+      power,
+      J,
+      F,
+      PP,
+      `E+`,
+      Y
+    ) |>
+    mutate(across(everything(), \(x) as.character(x)))
+}
+```
+
+Alright. Now we can map this to all sheets in the overarching Google Sheets document. We want to add some flair to our tables later - one easy way to do that is to include an illustrated side profile of each aircraft we're tracking. United actually posts these images [here](https://www.united.com/en/us/fly/company/aircraft/uniteds-fleet.html), so we can piggy-back off of United's content delivery network to show these images. Moreover, we can grab the seatmaps as well and match them to the configurations contained in these sheets.
+
+:::{.callout}
+Again, there are varied approaches you can take here. A better approach for permanence would be to download all the images, host them in your repo, and serve them using ```local_image()``` or an equivalent function. I'm adopting some assumptions here in pursuing the CDN and ```web_image()``` approach, namely that United's CDN is reliable and that they won't suddenly decide to change the locations of their media assets.
+
+Also, I'm sorry in advance to any aviation purists out there. United does not make side profiles for all their aircraft publicly available. This is particularly noticeable for the Airbus A319/A320/A321neo and the Boeing 737 variations, for which United simply put the image of one aircraft up (the A319 and a 737 MAX variant) and called it a day. If anyone knows where the other assets are located, that'd be a small but cool way to update this project.
+
+You might have an easier go of this with other airlines. Lufthansa, for example, [has published all kinds of side profiles of their aircraft](https://www.lufthansa.com/us/en/seat-maps), which makes me rethink whether I should've done this with Lufthansa aircraft instead. I digress.
+:::
+
+```{r,eval=FALSE}
+united_full_fleet_info <- bind_rows(map(1:15, \(x) united_fleet_info(x))) |>
+  mutate(
+    aircraft_image = case_match(
+      aircraft_model,
+      "319" ~
+        "https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png", # this is all United has public facing for 'Airbus'
+      "320" ~
+        "https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png", # maybe a320/21 exist out there, some more google dorking is needed
+      "21N" ~
+        "https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png",
+      "73G" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "738" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "38M" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "739" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "739ER" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "39M" ~
+        "https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png",
+      "752" ~
+        "https://media.united.com/assets/m/4b144548aa973560/original/757-200-2x.png",
+      "753" ~
+        "https://media.united.com/assets/m/4b144548aa973560/original/757-200-2x.png",
+      "763ER" ~
+        "https://media.united.com/assets/m/1b2147dcd5318024/original/767-300-2x.png",
+      "764ER" ~
+        "https://media.united.com/assets/m/1b2147dcd5318024/original/767-300-2x.png",
+      "77G" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "77M" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "77O" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "77N" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "77U" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "772ER" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "77W" ~
+        "https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png",
+      "787-8" ~
+        "https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png",
+      "787-10" ~
+        "https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png",
+      "787-9" ~
+        "https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png"
+    )
+  ) |>
+  mutate(
+    aircraft_model = case_match(
+      aircraft_model,
+      "319" ~ "Airbus A319",
+      "320" ~ "Airbus A320",
+      "21N" ~ "Airbus A321neo",
+      "73G" ~ "Boeing 737-700",
+      "738" ~ "Boeing 737-800",
+      "38M" ~ "Boeing 737 MAX 8",
+      "739" ~ "Boeing 737-900",
+      "739ER" ~ "Boeing 737-900ER",
+      "39M" ~ "Boeing 737 MAX 9",
+      "752" ~ "Boeing 757-200",
+      "753" ~ "Boeing 757-300",
+      "763ER" ~ "Boeing 767-300ER",
+      "764ER" ~ "Boeing 767-400ER",
+      "77G" ~ "Boeing 777-200",
+      "77M" ~ "Boeing 777-200",
+      "77O" ~ "Boeing 777-200ER",
+      "77N" ~ "Boeing 777-200ER",
+      "77U" ~ "Boeing 777-200ER",
+      "772ER" ~ "Boeing 777-200ER",
+      "77W" ~ "Boeing 777-300",
+      "787-8" ~ "Boeing 787-8 Dreamliner",
+      "787-10" ~ "Boeing 787-10 Dreamliner",
+      "787-9" ~ "Boeing 787-9 Dreamliner"
+    )
+  ) |>
+  mutate(
+    aircraft_seatmap = case_when(
+      aircraft_model == "Airbus A319" & config == "12F/36E+/78Y" ~
+        "https://media.united.com/assets/m/6c2619139fcc1674/original/Airbus-319_SeatMap.png",
+      aircraft_model == "Airbus A320" & config == "12F/42E+/96Y" ~
+        "https://media.united.com/assets/m/77611d0be598e4e2/original/Airbus-320_SeatMap.png",
+      aircraft_model == "Airbus A321neo" & config == "20F/57E+/123Y" ~
+        "https://media.united.com/assets/m/5f1be20d804eac0b/original/0043-A-Airbus-321-NEO_SeatMap_3850x1100.jpg",
+      aircraft_model == "Boeing 737-700" & config == "12F/36E+/78Y" ~
+        "https://media.united.com/assets/m/75349c6fec922b74/original/737-700_Seatmap.png",
+      aircraft_model == "Boeing 737-800" & config == "16F/42E+/108Y" ~
+        "https://media.united.com/assets/m/59d58a3109d4fdcf/original/737_800-V3_Seatmap.png",
+      aircraft_model == "Boeing 737-800" & config == "16F/54E+/96Y" ~
+        "https://media.united.com/assets/m/478c8a4514af749f/original/737_800-V2_Seatmap.png",
+      aircraft_model == "Boeing 737-800" & config == "16F/48E+/102Y" ~
+        "https://media.united.com/assets/m/2e41eddf5126cca/original/737_800-V1_Seatmap.png",
+      aircraft_model == "Boeing 737 MAX 8" & config == "16F/54E+/96Y" ~
+        "https://media.united.com/assets/m/468bc1680a021607/original/737_8_Max_-16_150-_2272px_62colors.webp",
+      aircraft_model == "Boeing 737-900" & config == "20F/42E+/117Y" ~
+        "https://media.united.com/assets/m/7ecc06665f5eadc5/original/737-900-V1_Seatmap.png",
+      aircraft_model == "Boeing 737-900" & config == "20F/45E+/114Y" ~
+        "https://media.united.com/assets/m/672e436134393ac8/original/737-900-V3_Seatmap.png",
+      aircraft_model == "Boeing 737-900ER" & config == "20F/42E+/117Y" ~
+        "https://media.united.com/assets/m/7ecc06665f5eadc5/original/737-900-V1_Seatmap.png",
+      aircraft_model == "Boeing 737-900ER" & config == "20F/45E+/114Y" ~
+        "https://media.united.com/assets/m/672e436134393ac8/original/737-900-V3_Seatmap.png",
+      aircraft_model == "Boeing 737 MAX 9" & config == "20F/45E+/114Y" ~
+        "https://media.united.com/assets/m/478424e0a7f686a3/original/737-9_ICR-B3D_B3Di11142017_3850x1100.jpg",
+      aircraft_model == "Boeing 737 MAX 9" & config == "20F/48E+/111Y" ~
+        "https://media.united.com/assets/m/61c72950276939c2/original/737-900-MAX9_Seatmap.png",
+      aircraft_model == "Boeing 757-200" & config == "16J/42E+/118Y" ~
+        "https://media.united.com/assets/m/5cd6b8b29de9fe1e/original/0024_757-200_SeatMap_3850x1100.png",
+      aircraft_model == "Boeing 757-300" & config == "24F/54E+/156Y" ~
+        "https://media.united.com/assets/m/6ad7c68d690247ad/original/757-300_SeatMap.png",
+      aircraft_model == "Boeing 767-300ER" & config == "30J/24PP/32E+/113Y" ~
+        "https://media.united.com/assets/m/7f46e01710b8c8ee/original/767-300-V3_SeatMap.png",
+      aircraft_model == "Boeing 767-300ER" & config == "46J/22PE/43E+/56Y" ~
+        "https://media.united.com/assets/m/3a404651615a2ff7/original/767-300-V2_SeatMap.png",
+      aircraft_model == "Boeing 767-400ER" & config == "34J/24PE/48E+/125Y" ~
+        "https://media.united.com/assets/m/402d979292c41b69/original/767-400_V2_Seatmap.png",
+      aircraft_model == "Boeing 777-200" & config == "28F/102E+/234Y" ~
+        "https://media.united.com/assets/m/5f45564c1af4723c/original/777-200_V2_SeatMap.png",
+      aircraft_model == "Boeing 777-200ER" & config == "32F/124E+/206Y" ~ NA,
+      aircraft_model == "Boeing 777-200ER" & config == "50J/24PE/46E+/156Y" ~
+        "https://media.united.com/assets/m/135e5704439135f4/original/777-200_V1_SeatMap.png",
+      aircraft_model == "Boeing 777-300" & config == "60J/24PE/62E+/204Y" ~
+        "https://media.united.com/assets/m/7d514e882a9d133f/original/777-300ER_SeatMap.png",
+      aircraft_model == "Boeing 787-8 Dreamliner" &
+        config == "28J/21PE/36E+/158Y" ~
+        "https://media.united.com/assets/m/c8b1f1d11e6c118/original/787-8_SeatMap.png",
+      aircraft_model == "Boeing 787-10 Dreamliner" &
+        config == "44J/21PE/54E+/199Y" ~
+        "https://media.united.com/assets/m/3ccf19b38c5430c2/original/787-10_SeatMap.png",
+      aircraft_model == "Boeing 787-9 Dreamliner" &
+        config == "48J/21PE/39E+/149Y" ~
+        "https://media.united.com/assets/m/6d72d9a9f884e8d2/original/787-9_SeatMap.png"
+    )
+  ) |>
+  drop_na(aircraft_image)
+```
+
+We'll drop ```NA``` on the ```aircraft_image``` column, as information rows, similar to row 2, that do not conform to the schema are missing information on ```aircraft_model``` (but are not blank!), therefore missing information on ```aircraft_image```. Now we can save that to a CSV.
+
+```{r, eval=FALSE}
+write_csv(united_full_fleet_info, "data/united_full_fleet_info.csv")
+```
+
+Remember that function we built to go from registration numbers to icao24 addresses in @sec-get-data? We'll use that on a list of United mainline registrations. Let's pull the registration column from the full fleet info, making sure we're not passing any NAs and any untidy data that's slipped through, i.e., values not starting with "N" or anything with whitespace. We'll map the ```get_icao24_from_registration``` function to this vector and then write that out as ```data/compatible_registrations.csv```. Make sure you have a ```data``` folder set up in your project directory! You can also change the filepath as you wish.
+
+```{r}
+united_icao_list <- united_full_fleet_info |>
+  drop_na(registration) |>
+  filter(str_starts(registration, "N")) |>
+  mutate(registration = trimws(registration)) |>
+  pull(registration)
+compatible_registrations <- bind_rows(map(
+  united_icao_list,
+  get_icao24_from_registration
+))
+
+write_csv(compatible_registrations, "data/compatible_registrations.csv")
+```
+
+## Customizing the Fleet Tracker to Another Airline
+It's worth adding a quick note that if you want to take this project and run with another airline, this is the major piece you'll need to change out in order to do so. @sec-get-data will work universally for whatever airline you choose, but you'll need a list of icao24 addresses to pass through these functions. Apart from getting different icao24 addresses, you'll probably want a table with information on the fleet similar to what's been presented in this section - at least the aircraft models and links to visuals you'd like to include. If you change the schema, you'll probably need to change some of the table code, covered in the next chapter.

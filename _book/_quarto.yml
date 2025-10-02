@@ -1,0 +1,28 @@
+project:
+  type: book
+
+book:
+  title: "United Explorer Project Documentation"
+  author: "Martin Stavro"
+  date: "9/30/2025"
+  chapters:
+    - index.qmd
+    - intro.qmd
+    - data_sources.qmd
+    - get_data.qmd
+    - map_tables.qmd
+    - summary.qmd
+    - references.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+  pdf:
+    documentclass: scrreprt
+
+
+

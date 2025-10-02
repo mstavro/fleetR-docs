@@ -1,0 +1,20 @@
+# Preface {.unnumbered}
+
+This book documents my entry for Posit's 2025 Table Contest, the ***Unofficial United Mainline Fleet Tracker.***
+
+### The Method Behind the Madness
+> Why did you do it *that* way?
+
+In my limited years of experience on this Earth (23 of them and some change), I find that thinking about things is hard.[^1] Writing about them is perhaps even harder. I can't help my mental tendencies to make simplifying assumptions about the world and hope that you, dear reader, will magically share those same assumptions.
+
+But I'm going to try anyway. To that end, this documentation should leave you with these two things:
+
+1. An understanding of how to reproduce my entry with the provided code;
+2. An understanding of the state of mind when embarking on a project like this;
+
+I think that point two is just as important as point one because, if you're like me, you'll venture on a project like this one and have several "what the %@$&*! is going on?" moments along the way. Which is great, and a little daunting. Point being that seeing someone else navigate these decision points is often helpful for understanding how to navigate your own projects (I hope, again with the assumptions).
+
+So hopefully this will read like a little story, we'll journey through it together and have more or less an understanding of how to embark on a *"software"* project.[^2]
+
+[^1]: I blame my decision to pick up a philosophy major for this perspective.
+[^2]: If I may be so bold to call it that.

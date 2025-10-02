@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>3&nbsp; Actually Getting Flight Data (feat. httr2) – United Explorer Project Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./deployment.html" rel="next">
+<link href="./data_sources.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-2778ace39694e72d95bda470d4070c24.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./get_data.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">United Explorer Project Documentation</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Coming Up With a Project Idea</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_sources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finding Data in the Real World</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-api" id="toc-sec-api" class="nav-link active" data-scroll-target="#sec-api"><span class="header-section-number">3.1</span> Interacting with APIs</a>
+  <ul class="collapse">
+  <li><a href="#sec-adsbdb" id="toc-sec-adsbdb" class="nav-link" data-scroll-target="#sec-adsbdb"><span class="header-section-number">3.1.1</span> Interacting with the ADSBDB API</a></li>
+  <li><a href="#interacting-with-the-adsb.lol-api" id="toc-interacting-with-the-adsb.lol-api" class="nav-link" data-scroll-target="#interacting-with-the-adsb.lol-api"><span class="header-section-number">3.1.2</span> Interacting with the adsb.lol API</a></li>
+  <li><a href="#sec-opensky" id="toc-sec-opensky" class="nav-link" data-scroll-target="#sec-opensky"><span class="header-section-number">3.1.3</span> Interacting with the OpenSky API</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span id="sec-get-data" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Alright, I’ve talked your ear off (typed your eyes off?) about the project background and the mental model framing my development approach. This section actually walks you through some code! For this section, we’ll be putting all of our code into an R script called <code>support_functions.R</code></p>
+<section id="sec-api" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-api"><span class="header-section-number">3.1</span> Interacting with APIs</h2>
+<p>There are many methods of interacting with APIs, but for this project I’ll be using httr2. For a comprehensive rundown of httr2, <a href="https://httr2.r-lib.org/">nothing replaces the docs</a>, but I’ll give a quick rundown of some overarching principles before we set up our data pipelines.</p>
+<p>A request in httr2 generally starts like this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">"httr2"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>req <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://some_example.com"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>… where some_example.com is the base URL forming all API requests. For the OpenSky network, the root of the REST API is <code>https://opensky-network.org/api</code>, though you could also set up the request using a specific endpoint as the base_url as well, for example, <code>https://opensky-network.org/api/states/all?</code></p>
+<p>The next function following <code>request()</code> is usually what the request needs to pass to the API. In this project, I use the following request varieties:</p>
+<ul>
+<li><code>req_url_query()</code>: forms API requests where the API roughly takes on the form of <code>variable=value</code>, i.e., <code>https://opensky-network.org/api/states/all?icao24=abcdefg</code></li>
+<li><code>req_url_path_append()</code>: for when you simply need to append something to the end of the base URL, i.e., <code>https://api.adsbdb.com/v0/n-number/</code></li>
+<li><code>req_body_json()</code>: for when you need to pass information in a JSON to an API</li>
+</ul>
+<p>These are chained together using the pipe operator like so:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">request</span>(url) <span class="sc">|&gt;</span> <span class="fu">req_url_query</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We then perform the request by chaining <code>req_perform()</code> onto it. Once we use <code>req_perform()</code>, our request is sent! But we still need to extract our data from the request. For that, we’ll use one of httr2’s functions starting with <em>resp</em>. In this project, I only use one type:</p>
+<ul>
+<li><code>resp_body_json()</code>: returns the parsed JSON information from the httr2 response object</li>
+</ul>
+<p>For the rest of this section, we’ll be building functions so we can send httr2 requests and get data back for our aircraft, thereby building the pipeline to supply our tables with new information updated at regular intervals throughout the day.</p>
+<section id="sec-adsbdb" class="level3" data-number="3.1.1">
+<h3 data-number="3.1.1" class="anchored" data-anchor-id="sec-adsbdb"><span class="header-section-number">3.1.1</span> Interacting with the ADSBDB API</h3>
+<p>We’ll start with the most straightforward API to work with: the ADSBDB API. The ADSBDB API doesn’t require any authentication and simply requires us to append some information onto a few base URLs. Among other things, the ADSBDB API allows us to switch between icao24 (or Mode-S) identification information and registration numbers, which is important for us to construct a list of aircraft from the United Fleet Google Sheet that we can check against the OpenSky API, since the OpenSky API only takes icao24 addresses.</p>
+<p>Let’s start by reading through the ADSBDB API documentation for going from registration values to icao24 values.</p>
+<p><img src="assets\adsbdb_registration_icao.png" class="img-fluid"></p>
+<p>Okay, so we’ve got the base URL, <code>https://api.adsbdb.com/v0/</code>, the endpoint, <code>n_number/</code>, and what we’ll query by, the registration, denoted by <code>[N-NUMBER]</code>.</p>
+<p>To keep it simple, we’ll just treat the URL up to <code>n_number/</code> as the base URL when passing our url argument to <code>request()</code>. Since the registration number is simply appended to the base URL in this case, we’ll use <code>req_url_path_append()</code>. We will wrap our httr2 request in a function. Why? So we can programmatically use our HTTP request to the RESTful API across multiple aircraft using functions like <code>map()</code> later on. Let’s name the function something so we can easily remember what it does; maybe <code>get_icao24_from_registration</code>? And let’s call the variable we’re passing registration, since that’s what <code>[N_NUMBER]</code> serves as a stand-in for. Doing that gives us something like this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(httr2)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>get_icao24_from_registration <span class="ot">&lt;-</span> <span class="cf">function</span>(registration) {</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  icao24 <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsbdb.com/v0/n-number/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_path_append</span>(registration) <span class="sc">|&gt;</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>()</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(icao24)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Alright, let’s try it on registration number N37502:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_icao24_from_registration</span>(<span class="st">"N37502"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$response
+[1] "A448D1"</code></pre>
+</div>
+</div>
+<p>This is a good start. But we might want the results to come out directly instead of being nested behind <code>$response</code>. We can change the return to <code>return(icao24$response)</code> to do that. We might also want to return the results in a tibble, so we can easily use the <code>bind_rows()</code> function from dplyr in combination with <code>map()</code> later to combine a bunch of results.</p>
+<p>In order to use <code>map()</code>, we might also want to add some error handling to our function. Seeing that ADSBDB is being continuously updated to improve its coverage of registrations to icao24 values, there may be some gaps in the data, causing the function to error out if we input a registration that hasn’t been included in the database. There are several methods to deal with this, including the use of <code>possibly()</code> and <code>safely()</code>, though I chose to use <code>tryCatch()</code> in combination with the <code>logger</code> package to emit an error log.</p>
+<p>Let’s put all these suggestions into practice. First, we’ll add the ability to export the result we want, <code>icao24$response</code>, as a tibble.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>get_icao24_from_registration <span class="ot">&lt;-</span> <span class="cf">function</span>(registration, <span class="at">return_tibble =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  icao24 <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsbdb.com/v0/n-number/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_path_append</span>(registration) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (return_tibble) {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(<span class="fu">as_tibble</span>(icao24<span class="sc">$</span>response) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">icao24 =</span> value))</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">return</span>(icao24<span class="sc">$</span>response)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Next, we’ll wrap that in <code>tryCatch()</code>, emitting a <code>log_error()</code> whenever icao24 information isn’t found on a given registration.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logger)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>get_icao24_from_registration <span class="ot">&lt;-</span> <span class="cf">function</span>(registration, <span class="at">return_tibble =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      icao24 <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsbdb.com/v0/n-number/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_path_append</span>(registration) <span class="sc">|&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>()</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (return_tibble) {</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">as_tibble</span>(icao24<span class="sc">$</span>response) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">icao24 =</span> value))</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(icao24<span class="sc">$</span>response)</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(<span class="st">"No icao24 information found for registration {registration}"</span>)</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>And now we’ll try outputting the result again:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_icao24_from_registration</span>(<span class="st">"N37502"</span>, <span class="at">return_tibble =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "A448D1"</code></pre>
+</div>
+</div>
+<p>Voila!</p>
+<p>I think it’s useful to note things that I’d do differently if I had to do this again from scratch (now that I’m typing up this documentation after the fact). One thing I’d change is the error function in <code>tryCatch()</code>. Reason being that I’m making a pretty substantial assumption here about the nature of the error, i.e., that the icao24/mode-S value doesn’t exist, whereas the source of the error might be something different.</p>
+<p>As such, I’d recommend doing something like this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(logger)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>get_icao24_from_registration <span class="ot">&lt;-</span> <span class="cf">function</span>(registration, <span class="at">return_tibble =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>      icao24 <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsbdb.com/v0/n-number/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_path_append</span>(registration) <span class="sc">|&gt;</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (return_tibble) {</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">as_tibble</span>(icao24<span class="sc">$</span>response) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">icao24 =</span> value))</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(icao24<span class="sc">$</span>response)</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(<span class="st">"{registration} encountered error {e}"</span>)</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a><span class="fu">get_icao24_from_registration</span>(<span class="st">"not a real registration"</span>, <span class="at">return_tibble =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>NULL</code></pre>
+</div>
+</div>
+<p>… which returns <code>NULL</code> as seen above, but also prints this message to the console:</p>
+<pre><code>ERROR [2025-09-30 20:03:09] not a real registration encountered error Error in `req_perform()`:
+! HTTP 400 Bad Request.</code></pre>
+<p>… and, in fact, I’ve gone back and made sure <code>{e}</code> is included in my <code>log_error()</code> calls where appropriate.</p>
+<p>We might also want a reverse function that allows us to move from icao24 numbers to registration numbers. That’s fairly easy, all we have to do is create a new function with a base URL hitting the endpoint <code>mode_s</code> and swap <code>registration</code> for <code>icao24</code>. That looks like so:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>get_registration_from_icao24 <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">return_tibble =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>      registration <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsbdb.com/v0/mode-s/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_path_append</span>(icao24) <span class="sc">|&gt;</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>()</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (return_tibble) {</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">as_tibble</span>(registration<span class="sc">$</span>response) <span class="sc">|&gt;</span> <span class="fu">rename</span>(<span class="at">registration =</span> value))</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>      } <span class="cf">else</span> {</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>        <span class="fu">return</span>(registration<span class="sc">$</span>response)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(<span class="st">"{icao24} encountered error {e}"</span>)</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(<span class="cn">NULL</span>)</span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>I’m storing these functions in a file called <code>support_functions.R</code> which I’ll call later in my other scripts, just to keep them in a separate, single source of truth.</p>
+</section>
+<section id="interacting-with-the-adsb.lol-api" class="level3" data-number="3.1.2">
+<h3 data-number="3.1.2" class="anchored" data-anchor-id="interacting-with-the-adsb.lol-api"><span class="header-section-number">3.1.2</span> Interacting with the adsb.lol API</h3>
+<p>The adsb.lol is a little trickier but still fairly friendly. Instead of <code>req_url_path_append()</code>, we’ve got to use <code>req_body_json()</code>, since the adsb.lol’s routeset endpoint only accepts requests formatted as JSON. Here’s the schema from the docs:</p>
+<pre><code>{
+  "planes": [
+    {
+      "callsign": "string",
+      "lat": 0,
+      "lng": 0
+    }
+  ]
+}</code></pre>
+<p>Okay, a little daunting if you’re not used to working with JSON - speaking for myself here! Luckily LLMs were a good tool that helped me tease this out. To prepare an R object for representation as JSON, we generally use <code>list()</code>. Likely an oversimplifcation, but in this case, each set of braces {} and brackets [] roughly represents where we need to include <code>list()</code>. Using that rule, our JSON setup should look like this:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>json <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">planes =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">callsign =</span> callsign, <span class="at">lat =</span> <span class="dv">0</span>, <span class="at">lng =</span> <span class="dv">0</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>… where <code>callsign</code> is going to be the variable we use in a function. <code>lat</code> and <code>lon</code> are optional latitude and longitude parameters we won’t concern ourselves with for the time being.</p>
+<p>Alright, so putting that together with what we’ve learned from working with ADSBDB, all we need to do is replace <code>req_url_path_append()</code> with <code>req_body_json()</code> and we should be good to go. Let’s call this one <code>get_route_information</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>get_route_information <span class="ot">&lt;-</span> <span class="cf">function</span>(callsign) {</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  json <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">planes =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">callsign =</span> callsign, <span class="at">lat =</span> <span class="dv">0</span>, <span class="at">lng =</span> <span class="dv">0</span>))</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsb.lol/api/0/routeset/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_body_json</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>()</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(route)</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>… and let’s try it with a random aircraft I pulled from the dashboard, N12003 operating as UAL881:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_route_information</span>(<span class="st">"UAL881"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[[1]]$`_airport_codes_iata`
+[1] "ORD-HND"
+
+[[1]]$`_airports`
+[[1]]$`_airports`[[1]]
+[[1]]$`_airports`[[1]]$alt_feet
+[1] 672
+
+[[1]]$`_airports`[[1]]$alt_meters
+[1] 204.83
+
+[[1]]$`_airports`[[1]]$countryiso2
+[1] "US"
+
+[[1]]$`_airports`[[1]]$iata
+[1] "ORD"
+
+[[1]]$`_airports`[[1]]$icao
+[1] "KORD"
+
+[[1]]$`_airports`[[1]]$lat
+[1] 41.9786
+
+[[1]]$`_airports`[[1]]$location
+[1] "Chicago"
+
+[[1]]$`_airports`[[1]]$lon
+[1] -87.9048
+
+[[1]]$`_airports`[[1]]$name
+[1] "Chicago O'Hare International Airport"
+
+
+[[1]]$`_airports`[[2]]
+[[1]]$`_airports`[[2]]$alt_feet
+[1] 35
+
+[[1]]$`_airports`[[2]]$alt_meters
+[1] 10.67
+
+[[1]]$`_airports`[[2]]$countryiso2
+[1] "JP"
+
+[[1]]$`_airports`[[2]]$iata
+[1] "HND"
+
+[[1]]$`_airports`[[2]]$icao
+[1] "RJTT"
+
+[[1]]$`_airports`[[2]]$lat
+[1] 35.5523
+
+[[1]]$`_airports`[[2]]$location
+[1] "Tokyo"
+
+[[1]]$`_airports`[[2]]$lon
+[1] 139.78
+
+[[1]]$`_airports`[[2]]$name
+[1] "Tokyo-Haneda International Airport"
+
+
+
+[[1]]$airline_code
+[1] "UAL"
+
+[[1]]$airport_codes
+[1] "KORD-RJTT"
+
+[[1]]$callsign
+[1] "UAL881"
+
+[[1]]$number
+[1] "881"
+
+[[1]]$plausible
+[1] 0</code></pre>
+</div>
+</div>
+<p>Yeah, that doesn’t look very tidy. Well, they do say that most of data work is cleaning. Let’s see if we can massage this a bit. Looks like everything is stored under <code>[[1]]</code>, so let’s get <code>route[[1]]</code> and try putting it into a tibble.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.2     ✔ tibble    3.3.0
+✔ lubridate 1.9.4     ✔ tidyr     1.3.1
+✔ purrr     1.1.0     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glue)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>get_route_information <span class="ot">&lt;-</span> <span class="cf">function</span>(callsign) {</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  json <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">planes =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">callsign =</span> callsign, <span class="at">lat =</span> <span class="dv">0</span>, <span class="at">lng =</span> <span class="dv">0</span>))</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsb.lol/api/0/routeset/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_body_json</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>()</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> route[[<span class="dv">1</span>]] <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(route)</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a><span class="fu">get_route_information</span>(<span class="st">"UAL881"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 7
+  `_airport_codes_iata` `_airports`  airline_code airport_codes callsign number
+  &lt;chr&gt;                 &lt;list&gt;       &lt;chr&gt;        &lt;chr&gt;         &lt;chr&gt;    &lt;chr&gt; 
+1 ORD-HND               &lt;named list&gt; UAL          KORD-RJTT     UAL881   881   
+2 ORD-HND               &lt;named list&gt; UAL          KORD-RJTT     UAL881   881   
+# ℹ 1 more variable: plausible &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>Better. But the shape isn’t entirely correct. If we think a little bit farther ahead to how the other data might look, we want one observation, i.e., one row, per plane. We’ve got two rows here, one for each airport it looks like. In fact, sometimes this API will return a multi-leg route - i.e., three rows or more! These routes are generally more common for point-to-point airlines like Southwest than they are with hub-and-spoke airlines like United. For now, to deal with these uncertain cases, we’ll plan on stopping the function entirely if there’s more than two rows returned by route.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>In the future, one improvement would be to take the tracks provided by OpenSky and infer the departure airport based on spatial proximity using a spatial dataset of airports.</p>
+</div>
+</div>
+</div>
+<p>For now, we’ll focus on two-leg routes. After grabbing <code>route[[1]]</code>, we need to pull apart the first row (origin) and second row (destination). We’ve also got to do something about these named lists sitting under the <code>`_airports`</code> column. Let’s try using <code>unnest_wider()</code>, separating the names with an underscore. We’re also going to try and bring these columns back together in a single row, so we’ve got to name them something different from one another. Let’s append <code>origin_</code> to all columns in the object for the first row, and <code>destination_</code> to all columns in the object for the second row. Then, let’s bind the columns using <code>bind_cols()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>get_route_information <span class="ot">&lt;-</span> <span class="cf">function</span>(callsign) {</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  json <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">planes =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">callsign =</span> callsign, <span class="at">lat =</span> <span class="dv">0</span>, <span class="at">lng =</span> <span class="dv">0</span>))</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsb.lol/api/0/routeset/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_body_json</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>()</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> route[[<span class="dv">1</span>]] <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">nrow</span>(route) <span class="sc">&gt;</span> <span class="dv">2</span>) {</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">stop</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>      <span class="st">"Callsign has multiple routes or a multi-leg route. Unable to determine routing."</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  route_origin <span class="ot">&lt;-</span> route[<span class="dv">1</span>, ] <span class="sc">|&gt;</span></span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(<span class="st">`</span><span class="at">_airports</span><span class="st">`</span>, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_all</span>(<span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"origin_{.x}"</span>))</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>  route_destination <span class="ot">&lt;-</span> route[<span class="dv">2</span>, ] <span class="sc">|&gt;</span></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(<span class="st">`</span><span class="at">_airports</span><span class="st">`</span>, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename_all</span>(<span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"destination_{.x}"</span>))</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  route <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(route_origin, route_destination)</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(route_origin)</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a><span class="fu">get_route_information</span>(<span class="st">"UAL881"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 15
+  origin__airport_codes_iata origin__airports_alt_feet origin__airports_alt_me…¹
+  &lt;chr&gt;                                          &lt;dbl&gt;                     &lt;dbl&gt;
+1 ORD-HND                                          672                      205.
+# ℹ abbreviated name: ¹​origin__airports_alt_meters
+# ℹ 12 more variables: origin__airports_countryiso2 &lt;chr&gt;,
+#   origin__airports_iata &lt;chr&gt;, origin__airports_icao &lt;chr&gt;,
+#   origin__airports_lat &lt;dbl&gt;, origin__airports_location &lt;chr&gt;,
+#   origin__airports_lon &lt;dbl&gt;, origin__airports_name &lt;chr&gt;,
+#   origin_airline_code &lt;chr&gt;, origin_airport_codes &lt;chr&gt;,
+#   origin_callsign &lt;chr&gt;, origin_number &lt;chr&gt;, origin_plausible &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>Alright, just a few more things to take care of. Some of these columns now have a double underscore. Additionally, we don’t have the callsign info anywhere in this tibble, so we’ll need to mutate that in using <code>mutate(callsign = callsign)</code>. Let’s also add some error handling similar to the other functions, where an error returns a tibble in a similar schema filled with NAs, parsed down to only the columns used by table creation functions later in the project.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>get_route_information <span class="ot">&lt;-</span> <span class="cf">function</span>(callsign) {</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>      json <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>        <span class="at">planes =</span> <span class="fu">list</span>(<span class="fu">list</span>(<span class="at">callsign =</span> callsign, <span class="at">lat =</span> <span class="dv">0</span>, <span class="at">lng =</span> <span class="dv">0</span>))</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>      route <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://api.adsb.lol/api/0/routeset/"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_body_json</span>(json) <span class="sc">|&gt;</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>() <span class="sc">|&gt;</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>()</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>      route <span class="ot">&lt;-</span> route[[<span class="dv">1</span>]] <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="fu">nrow</span>(route) <span class="sc">&gt;</span> <span class="dv">2</span>) {</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">stop</span>(</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>          <span class="st">"Callsign has multiple routes or a multi-leg route. Unable to determine routing."</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>      route_origin <span class="ot">&lt;-</span> route[<span class="dv">1</span>, ] <span class="sc">|&gt;</span></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="st">`</span><span class="at">_airports</span><span class="st">`</span>, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename_all</span>(<span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"origin_{.x}"</span>))</span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>      route_destination <span class="ot">&lt;-</span> route[<span class="dv">2</span>, ] <span class="sc">|&gt;</span></span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="st">`</span><span class="at">_airports</span><span class="st">`</span>, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename_all</span>(<span class="sc">~</span> <span class="fu">glue</span>(<span class="st">"destination_{.x}"</span>))</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>      route <span class="ot">&lt;-</span> <span class="fu">bind_cols</span>(route_origin, route_destination) <span class="sc">|&gt;</span></span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename_all</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(.x, <span class="st">"__"</span>, <span class="st">"_"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">callsign =</span> callsign)</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(route)</span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(<span class="st">"Error getting route info for {callsign} {e}"</span>)</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>      route <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">origin_airports_iata =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">origin_airports_name =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>        <span class="at">origin_airports_countryiso2 =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>        <span class="at">origin_plausible =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>        <span class="at">destination_airports_iata =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>        <span class="at">destination_airports_name =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>        <span class="at">destination_airports_countryiso2 =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>        <span class="at">destination_plausible =</span> <span class="cn">NA</span>,</span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(route)</span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a><span class="fu">get_route_information</span>(<span class="st">"UAL881"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 31
+  origin_airport_codes_iata origin_airports_alt_feet origin_airports_alt_meters
+  &lt;chr&gt;                                        &lt;dbl&gt;                      &lt;dbl&gt;
+1 ORD-HND                                        672                       205.
+# ℹ 28 more variables: origin_airports_countryiso2 &lt;chr&gt;,
+#   origin_airports_iata &lt;chr&gt;, origin_airports_icao &lt;chr&gt;,
+#   origin_airports_lat &lt;dbl&gt;, origin_airports_location &lt;chr&gt;,
+#   origin_airports_lon &lt;dbl&gt;, origin_airports_name &lt;chr&gt;,
+#   origin_airline_code &lt;chr&gt;, origin_airport_codes &lt;chr&gt;,
+#   origin_callsign &lt;chr&gt;, origin_number &lt;chr&gt;, origin_plausible &lt;int&gt;,
+#   destination_airport_codes_iata &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<p>And here’s our final product!</p>
+</section>
+<section id="sec-opensky" class="level3" data-number="3.1.3">
+<h3 data-number="3.1.3" class="anchored" data-anchor-id="sec-opensky"><span class="header-section-number">3.1.3</span> Interacting with the OpenSky API</h3>
+<p>Even though I’ve listed the OpenSky API last, it isn’t really <em>that</em> daunting beyond authorizing your credentials. The authorization piece adds a little extra bit of complexity, but nothing we can’t handle. As alluded to in <a href="#sec-tolled-boxes" class="quarto-xref"><span class="quarto-unresolved-ref">sec-tolled-boxes</span></a>, the OpenSky API uses API credits as a way to deal with demand (among other things). For non-registered users, the limit is 400 credits a day, which roughly comes out to about 100 flights a day. That’s not very much. Luckily, with a simple and <em>free</em> registration, we can get ourselves up to 4,000 credits a day, or 1,000 flights a day instead!</p>
+<section id="interacting-as-an-unauthenticated-user" class="level4" data-number="3.1.3.1">
+<h4 data-number="3.1.3.1" class="anchored" data-anchor-id="interacting-as-an-unauthenticated-user"><span class="header-section-number">3.1.3.1</span> Interacting as an Unauthenticated User</h4>
+<p>I’ll cover the unauthenticated piece first and provide more details about authentication in the next section. We might as well use up the 400 credits we get as an unauthorized user on messing around and actually getting our functions to work, since the 400 and 4,000 are separate limits.</p>
+<p>We want both track and state vector data for a given aircraft, defined by an icao24 address. The base URLs for those endpoints are <code>https://opensky-network.org/api/states/all?</code> and <code>https://opensky-network.org/api/tracks/all?</code>. Let’s start with the track information first. Taking a look at the docs:</p>
+<p><img src="assets/opensky_tracks.png" class="img-fluid"></p>
+<p>We can see that our request needs to at least pass the property icao24. Time is optional, if we had information on when we thought the given icao24 code was in the air (i.e., a time between the start and end of a given flight). Since we don’t have that information, we’ll just pass the icao24 code in our request. To do that, we’ll use <code>req_url_query()</code>, which is structured in a <code>variable = value</code> pattern, and call this function <code>get_flight_track</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This is the basic body of our request. Note the <code>str_to_lower()</code> wrapping icao24. The OpenSky API only accepts lower case icao24 addresses. To make life a little easier, I added <code>str_to_lower()</code> as a failsafe to make sure the request doesn’t fail because of a malformed icao24 address. Before we include the code to actually get the response, we should probably add something here that we haven’t added to our previous functions, which is a way to tell how many credits we have left. For the OpenSky API, this is contained in the response header <code>"X-Rate-Limit-Remaining"</code>. We’ll grab that information and output it to the console using <code>log_info()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>… and now we’ll add the code to actually get the response:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>  check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>()</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(flight_track)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>What do we get? Well, depending on what time of day you run this, you might get a result, or you might not. So, for the purposes of this tutorial, I’m going to cheat a little bit, find an active flight, capture it, and store it to a CSV.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># flight_track &lt;- get_flight_track("A126CC")</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="co"># write_csv(flight_track, "data/flight_track.csv")</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a><span class="fu">read_csv</span>(<span class="st">"data/flight_track.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 60 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): icao24, callsign
+dbl (2): startTime, endTime
+lgl (1): path
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 5
+   icao24 callsign  startTime    endTime path 
+   &lt;chr&gt;  &lt;chr&gt;         &lt;dbl&gt;      &lt;dbl&gt; &lt;lgl&gt;
+ 1 a126cc UAL2353  1759356477 1759359956 NA   
+ 2 a126cc UAL2353  1759356477 1759359956 NA   
+ 3 a126cc UAL2353  1759356477 1759359956 NA   
+ 4 a126cc UAL2353  1759356477 1759359956 NA   
+ 5 a126cc UAL2353  1759356477 1759359956 NA   
+ 6 a126cc UAL2353  1759356477 1759359956 NA   
+ 7 a126cc UAL2353  1759356477 1759359956 NA   
+ 8 a126cc UAL2353  1759356477 1759359956 NA   
+ 9 a126cc UAL2353  1759356477 1759359956 NA   
+10 a126cc UAL2353  1759356477 1759359956 NA   
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
+<p>Alright, a few things to note here. One, even though <code>path</code> claims to be of type <code>&lt;lgl&gt;</code> and is full of <code>NA</code> values, that’s because <code>path</code> actually comes through as a list-column. So we’ll need to do that unnesting procedure that we’ve done many times before:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>  flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(<span class="at">col =</span> path, <span class="at">names_sep =</span> <span class="st">"_"</span>)</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(flight_track)</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># flight_track &lt;- get_flight_track("A126CC")</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a><span class="co"># write_csv(flight_track, "data/flight_track_2.csv")</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="fu">read_csv</span>(<span class="st">"data/flight_track_2.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 60 Columns: 10
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): icao24, callsign
+dbl (7): startTime, endTime, path_1, path_2, path_3, path_4, path_5
+lgl (1): path_6
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 60 × 10
+   icao24 callsign  startTime  endTime path_1 path_2 path_3 path_4 path_5 path_6
+   &lt;chr&gt;  &lt;chr&gt;         &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;lgl&gt; 
+ 1 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    304    142 FALSE 
+ 2 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    304    131 FALSE 
+ 3 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    304    124 FALSE 
+ 4 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    304    122 FALSE 
+ 5 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    304    121 FALSE 
+ 6 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    609    123 FALSE 
+ 7 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.3    609    124 FALSE 
+ 8 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.2    914    126 FALSE 
+ 9 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.9  -95.2   1219    125 FALSE 
+10 a126cc UAL2353  1759356477   1.76e9 1.76e9   29.8  -95.2   1524    124 FALSE 
+# ℹ 50 more rows</code></pre>
+</div>
+</div>
+<p>Okay. Unlike the adsb.lol API response which returns <em>named</em> lists, the OpenSky API returns an <em>unnamed</em> list that we have to unnest. This means we get less descriptive column names when we run <code>unnest_wider()</code>, since we’re lacking the metadata that a named list gives us, hence the <code>path_1</code>, <code>path_2</code>, <code>path_n</code> schema. Luckily, if we take a look at the OpenSky API documents again, each property of the JSON response is documented by index.</p>
+<p><img src="assets/opensky_tracks.png" class="img-fluid"></p>
+<p>R is a one-based indexed language, so shift every value of the index in that table by 1. Doing that, we can rename our columns by including this bit of code:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">rename</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">timestamp =</span> path_1,</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">latitude =</span> path_2,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">longitude =</span> path_3,</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">baro_altitude =</span> path_4,</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">true_track =</span> path_5,</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">on_ground =</span> path_6</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The columns <code>startTime</code>, <code>endTime</code>, and <code>timestamp</code> are currently long numeric strings, because they represent Unix time: a running total of seconds since January 1, 1970, midnight UTC. I’m not sure about the merits of using Unix timestamp, and I won’t go down that rabbit hole right now, but I’ll extend you the courtesy of linking the <a href="https://en.wikipedia.org/wiki/Unix_time">Wikipedia article on Unix time</a> if you’re so inclined. <code>lubridate</code>’s got a function, <code>as_datetime()</code>, that helps us convert Unix timestamps into something more intelligible. We’ll mutate across all the time columns to convert them into human (and machine) readable timestamps.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24) {</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>  flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb38-14"><a href="#cb38-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(<span class="at">col =</span> path, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-15"><a href="#cb38-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(</span>
+<span id="cb38-16"><a href="#cb38-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">timestamp =</span> path_1,</span>
+<span id="cb38-17"><a href="#cb38-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">latitude =</span> path_2,</span>
+<span id="cb38-18"><a href="#cb38-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">longitude =</span> path_3,</span>
+<span id="cb38-19"><a href="#cb38-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">baro_altitude =</span> path_4,</span>
+<span id="cb38-20"><a href="#cb38-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">true_track =</span> path_5,</span>
+<span id="cb38-21"><a href="#cb38-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">on_ground =</span> path_6</span>
+<span id="cb38-22"><a href="#cb38-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb38-23"><a href="#cb38-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(startTime, endTime, timestamp), \(x) <span class="fu">as_datetime</span>(x))) <span class="sc">|&gt;</span></span>
+<span id="cb38-24"><a href="#cb38-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb38-25"><a href="#cb38-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(timestamp)</span>
+<span id="cb38-26"><a href="#cb38-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-27"><a href="#cb38-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(flight_track)</span>
+<span id="cb38-28"><a href="#cb38-28" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Finally, we’re dealing with geospatial data here. This data has a bunch of rows, and that’s because it has a bunch of different coordinates throughout time. For present purposes, we really just want the complete picture of an aircraft’s flight path up until the point in time we pulled its data. So let’s summarize the data, convert it to a simple features dataframe, and cast it to <code>"LINESTRING"</code>. We’ll do that by using <code>st_as_sf()</code> to convert the data to a simple features dataframe, specifying <code>coords = c("longitude", "latitude", "baro_altitude")</code> as the X, Y, and Z (height) dimensions of our data. We can specify <code>dim = "XYZ"</code>, though the default of this function already captures this, so it can be omitted. Finally, we need to define the projection system. The World Geodetic System, WGS, and its current version, 84, is the standard, hence we’ll specify 4326 for WGS84.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Linking to GEOS 3.13.1, GDAL 3.11.0, PROJ 9.6.0; sf_use_s2() is TRUE</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(<span class="st">"https://opensky-network.org/api/tracks/all?"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">req_perform</span>()</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>  check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-9"><a href="#cb41-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb41-10"><a href="#cb41-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-11"><a href="#cb41-11" aria-hidden="true" tabindex="-1"></a>  flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb41-12"><a href="#cb41-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-13"><a href="#cb41-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb41-14"><a href="#cb41-14" aria-hidden="true" tabindex="-1"></a>    <span class="fu">unnest_wider</span>(<span class="at">col =</span> path, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-15"><a href="#cb41-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(</span>
+<span id="cb41-16"><a href="#cb41-16" aria-hidden="true" tabindex="-1"></a>      <span class="at">timestamp =</span> path_1,</span>
+<span id="cb41-17"><a href="#cb41-17" aria-hidden="true" tabindex="-1"></a>      <span class="at">latitude =</span> path_2,</span>
+<span id="cb41-18"><a href="#cb41-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">longitude =</span> path_3,</span>
+<span id="cb41-19"><a href="#cb41-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">baro_altitude =</span> path_4,</span>
+<span id="cb41-20"><a href="#cb41-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">true_track =</span> path_5,</span>
+<span id="cb41-21"><a href="#cb41-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">on_ground =</span> path_6</span>
+<span id="cb41-22"><a href="#cb41-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb41-23"><a href="#cb41-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(startTime, endTime, timestamp), \(x) <span class="fu">as_datetime</span>(x))) <span class="sc">|&gt;</span></span>
+<span id="cb41-24"><a href="#cb41-24" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb41-25"><a href="#cb41-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">arrange</span>(timestamp)</span>
+<span id="cb41-26"><a href="#cb41-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-27"><a href="#cb41-27" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (as_sf) {</span>
+<span id="cb41-28"><a href="#cb41-28" aria-hidden="true" tabindex="-1"></a>    flight_track <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb41-29"><a href="#cb41-29" aria-hidden="true" tabindex="-1"></a>      flight_track,</span>
+<span id="cb41-30"><a href="#cb41-30" aria-hidden="true" tabindex="-1"></a>      <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"baro_altitude"</span>),</span>
+<span id="cb41-31"><a href="#cb41-31" aria-hidden="true" tabindex="-1"></a>      <span class="at">dim =</span> <span class="st">"XYZ"</span>,</span>
+<span id="cb41-32"><a href="#cb41-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb41-33"><a href="#cb41-33" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb41-34"><a href="#cb41-34" aria-hidden="true" tabindex="-1"></a>      <span class="fu">group_by</span>(icao24, callsign) <span class="sc">|&gt;</span></span>
+<span id="cb41-35"><a href="#cb41-35" aria-hidden="true" tabindex="-1"></a>      <span class="fu">summarize</span>(<span class="at">do_union =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-36"><a href="#cb41-36" aria-hidden="true" tabindex="-1"></a>      <span class="fu">st_cast</span>(<span class="st">"LINESTRING"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb41-37"><a href="#cb41-37" aria-hidden="true" tabindex="-1"></a>      <span class="fu">st_wrap_dateline</span>()</span>
+<span id="cb41-38"><a href="#cb41-38" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb41-39"><a href="#cb41-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(flight_track)</span>
+<span id="cb41-40"><a href="#cb41-40" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Easy, right? Well, easier than me trying to figure out why on Earth I was getting weird lines for the longest time. I’ll draw special attention to two things here:</p>
+<ol type="1">
+<li><code>summarize(do_union = FALSE)</code>: prevents sf from trying to union all the geometries (in this case, points) together when summarizing. If you fail to specify this argument, what you get is a weird connection of lines rather than a flight track.</li>
+<li><code>st_wrap_dateline()</code>: If you’ve ever mapped anything in the Pacific Ocean, you’ll probably be painfully aware that computers seem to have a tough time with the international date line.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> The date line causes a discontinuity in the coordinate system, particularly on the WGS84 projection. Interactive maps generally solve this issue, but, again, if you’re projecting data using WGS84, the coordinate system will have a discontinuity, and so <code>sf</code> will, rightfully, wrap your line around the other side of the world to make a valid, continuous geometry. <code>st_wrap_dateline()</code> solves this problem by detecting geometry that crosses the international date line, splitting it, and casting to <code>"MULTILINESTRING"</code>.</li>
+</ol>
+<p>I mentioned above as well as in <a href="#sec-tolled-boxes" class="quarto-xref"><span class="quarto-unresolved-ref">sec-tolled-boxes</span></a> that this function will fail and consume credits if the queried icao24 address is not actually in flight at the moment. Let’s add error handling for that similar to our other functions:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>      opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://opensky-network.org/api/tracks/all?"</span></span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>()</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>      check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>      flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="at">col =</span> path, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename</span>(</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">timestamp =</span> path_1,</span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>          <span class="at">latitude =</span> path_2,</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">longitude =</span> path_3,</span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">baro_altitude =</span> path_4,</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">true_track =</span> path_5,</span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">on_ground =</span> path_6</span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(startTime, endTime, timestamp), \(x) <span class="fu">as_datetime</span>(x))) <span class="sc">|&gt;</span></span>
+<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(timestamp)</span>
+<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (as_sf) {</span>
+<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a>        flight_track <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>          flight_track,</span>
+<span id="cb42-34"><a href="#cb42-34" aria-hidden="true" tabindex="-1"></a>          <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"baro_altitude"</span>),</span>
+<span id="cb42-35"><a href="#cb42-35" aria-hidden="true" tabindex="-1"></a>          <span class="at">dim =</span> <span class="st">"XYZ"</span>,</span>
+<span id="cb42-36"><a href="#cb42-36" aria-hidden="true" tabindex="-1"></a>          <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb42-37"><a href="#cb42-37" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb42-38"><a href="#cb42-38" aria-hidden="true" tabindex="-1"></a>          <span class="fu">group_by</span>(icao24, callsign) <span class="sc">|&gt;</span></span>
+<span id="cb42-39"><a href="#cb42-39" aria-hidden="true" tabindex="-1"></a>          <span class="fu">summarize</span>(<span class="at">do_union =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-40"><a href="#cb42-40" aria-hidden="true" tabindex="-1"></a>          <span class="fu">st_cast</span>(<span class="st">"LINESTRING"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb42-41"><a href="#cb42-41" aria-hidden="true" tabindex="-1"></a>          <span class="fu">st_wrap_dateline</span>()</span>
+<span id="cb42-42"><a href="#cb42-42" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb42-43"><a href="#cb42-43" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(flight_track)</span>
+<span id="cb42-44"><a href="#cb42-44" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb42-45"><a href="#cb42-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb42-46"><a href="#cb42-46" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(</span>
+<span id="cb42-47"><a href="#cb42-47" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Error occurred when retrieving flight track for {icao24}. {e} Check your icao24 value: {icao24} may be valid but currently inactive."</span></span>
+<span id="cb42-48"><a href="#cb42-48" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb42-49"><a href="#cb42-49" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb42-50"><a href="#cb42-50" aria-hidden="true" tabindex="-1"></a>        <span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24),</span>
+<span id="cb42-51"><a href="#cb42-51" aria-hidden="true" tabindex="-1"></a>        <span class="at">on_ground =</span> <span class="cn">TRUE</span></span>
+<span id="cb42-52"><a href="#cb42-52" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb42-53"><a href="#cb42-53" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb42-54"><a href="#cb42-54" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb42-55"><a href="#cb42-55" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>If the function doesn’t return any data, it could very well be the case that the aircraft associated with the icao24 address is inactive (on the ground) at the moment. For actually valid icao24 values, it seems fair to return a tibble with the icao24 value and a status of <code>TRUE</code> for <code>on_ground</code>. If we were to build this out further, we’d probably want to add some validation to the user’s icao24 input.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>The way I’ve handled the errors here is anticipation of using <code>map()</code> on this function, and this isn’t the only way, or maybe even the best way, to achieve this goal. One could use <code>possibly()</code> or <code>safely()</code> as alternatives which will move past errors when applying this function against a vector. But, for present purposes, this is what I’ve went with.</p>
+</div>
+</div>
+</div>
+<p>Okay, let’s do the same thing for state vectors. A lot of this is going to be similar so I’m going to move substantially quicker through this one. The base URL this time is <code>https://opensky-network.org/api/states/all?</code>, the arguments we need to pass (icao24) are the same, and we’ve got a whole bunch more return values. Spoiler: we’ll need to unnest, rename, coerce Unix values, and convert to simple features like last time. What’s different this time is that we’ve got a <code>callsign</code> column with some whitespace in it. We’ll deal with the whitespace using <code>mutate(callsign = trimws(callsign))</code> to get rid of it. We’ll call this function <code>get_state_vector</code>.</p>
+<p><img src="assets/opensky_states.png" class="img-fluid"></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>get_state_vector <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>      opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://opensky-network.org/api/states/all?"</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>()</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a>      check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="at">col =</span> states, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename</span>(</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a>          <span class="at">icao24 =</span> states_1,</span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a>          <span class="at">callsign =</span> states_2,</span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>          <span class="at">origin_country =</span> states_3,</span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>          <span class="at">time_position =</span> states_4,</span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>          <span class="at">last_contact =</span> states_5,</span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>          <span class="at">longitude =</span> states_6,</span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a>          <span class="at">latitude =</span> states_7,</span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a>          <span class="at">baro_altitude =</span> states_8,</span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a>          <span class="at">on_ground =</span> states_9,</span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">velocity =</span> states_10,</span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a>          <span class="at">true_track =</span> states_11,</span>
+<span id="cb43-31"><a href="#cb43-31" aria-hidden="true" tabindex="-1"></a>          <span class="at">vertical_rate =</span> states_12,</span>
+<span id="cb43-32"><a href="#cb43-32" aria-hidden="true" tabindex="-1"></a>          <span class="at">sensors =</span> states_13,</span>
+<span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">geo_altitude =</span> states_14,</span>
+<span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>          <span class="at">squawk =</span> states_15,</span>
+<span id="cb43-35"><a href="#cb43-35" aria-hidden="true" tabindex="-1"></a>          <span class="at">special_purpose =</span> states_16,</span>
+<span id="cb43-36"><a href="#cb43-36" aria-hidden="true" tabindex="-1"></a>          <span class="at">position_source =</span> states_17</span>
+<span id="cb43-37"><a href="#cb43-37" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb43-38"><a href="#cb43-38" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb43-39"><a href="#cb43-39" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(time, time_position, last_contact), \(x) {</span>
+<span id="cb43-40"><a href="#cb43-40" aria-hidden="true" tabindex="-1"></a>          <span class="fu">as_datetime</span>(x)</span>
+<span id="cb43-41"><a href="#cb43-41" aria-hidden="true" tabindex="-1"></a>        }))</span>
+<span id="cb43-42"><a href="#cb43-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-43"><a href="#cb43-43" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (as_sf) {</span>
+<span id="cb43-44"><a href="#cb43-44" aria-hidden="true" tabindex="-1"></a>        flight_position <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb43-45"><a href="#cb43-45" aria-hidden="true" tabindex="-1"></a>          flight_position,</span>
+<span id="cb43-46"><a href="#cb43-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"baro_altitude"</span>),</span>
+<span id="cb43-47"><a href="#cb43-47" aria-hidden="true" tabindex="-1"></a>          <span class="at">dim =</span> <span class="st">"XYZ"</span>,</span>
+<span id="cb43-48"><a href="#cb43-48" aria-hidden="true" tabindex="-1"></a>          <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb43-49"><a href="#cb43-49" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb43-50"><a href="#cb43-50" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb43-51"><a href="#cb43-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-52"><a href="#cb43-52" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(flight_position)</span>
+<span id="cb43-53"><a href="#cb43-53" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb43-54"><a href="#cb43-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb43-55"><a href="#cb43-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(</span>
+<span id="cb43-56"><a href="#cb43-56" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Error occurred when retrieving state vector for {icao24}. {e} Check your icao24 value: {icao24} may be valid but currently inactive."</span></span>
+<span id="cb43-57"><a href="#cb43-57" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb43-58"><a href="#cb43-58" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb43-59"><a href="#cb43-59" aria-hidden="true" tabindex="-1"></a>        <span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24),</span>
+<span id="cb43-60"><a href="#cb43-60" aria-hidden="true" tabindex="-1"></a>        <span class="at">on_ground =</span> <span class="cn">TRUE</span></span>
+<span id="cb43-61"><a href="#cb43-61" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb43-62"><a href="#cb43-62" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb43-63"><a href="#cb43-63" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-64"><a href="#cb43-64" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Let’s save this data for later using a geoparquet file.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sfarrow)</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a><span class="co"># st_write_parquet(get_flight_track("A126CC"), "data/flight_track.parquet")</span></span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a><span class="co"># st_write_parquet(get_state_vector("A126CC"), "data/state_vector.parquet")</span></span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a><span class="fu">st_read_parquet</span>(<span class="st">"data/flight_track.parquet"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 2 fields
+Geometry type: LINESTRING
+Dimension:     XYZ
+Bounding box:  xmin: -95.3315 ymin: 28.0255 xmax: -87.0249 ymax: 29.9453
+z_range:       zmin: 304 zmax: 10668
+Geodetic CRS:  WGS 84
+  icao24 callsign                       geometry
+1 a126cc  UAL2353 LINESTRING Z (-95.3315 29.9...</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">st_read_parquet</span>(<span class="st">"data/state_vector.parquet"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 1 feature and 15 fields
+Geometry type: POINT
+Dimension:     XYZ
+Bounding box:  xmin: -87.0249 ymin: 28.0255 xmax: -87.0249 ymax: 28.0255
+z_range:       zmin: 10668 zmax: 10668
+Geodetic CRS:  WGS 84
+                 time icao24 callsign origin_country       time_position
+1 2025-10-01 23:05:56 a126cc  UAL2353  United States 2025-10-01 23:05:56
+         last_contact on_ground velocity true_track vertical_rate sensors
+1 2025-10-01 23:05:56     FALSE   267.79     112.48             0      NA
+  geo_altitude squawk special_purpose position_source
+1     11254.74     NA           FALSE               0
+                        geometry
+1 POINT Z (-87.0249 28.0255 1...</code></pre>
+</div>
+</div>
+</section>
+<section id="interacting-as-an-authenticated-user" class="level4" data-number="3.1.3.2">
+<h4 data-number="3.1.3.2" class="anchored" data-anchor-id="interacting-as-an-authenticated-user"><span class="header-section-number">3.1.3.2</span> Interacting as an Authenticated User</h4>
+<p>If we want to up our credit limit from 400 to 4,000 we’ll need to register with OpenSky. You can do that by clicking sign in <a href="https://opensky-network.org/">here</a>. Once you create an account, you’ll see a box on the right-hand sign of your screen to issue credentials. Your credentials will come in the form of a JSON file called credentials.json.</p>
+<p>OpenSky uses an OAuth2 client credentials flow to authenticate requests to the API. All you need to know about that at the moment is <code>httr2</code> has a fairly straightforward way to deal with this. First, we’ll need to define our <code>oauth_client</code>:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>client1 <span class="ot">&lt;-</span></span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">oauth_client</span>(</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">id =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENSKY_CLIENT_ID"</span>),</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">token_url =</span> <span class="st">"https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token"</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">secret =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENSKY_CLIENT_SECRET"</span>),</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">auth =</span> <span class="st">"header"</span></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>… where <code>token_url</code> is where we get our token from, <code>id</code> is the ID in our credential.json file we got from OpenSky, and <code>secret</code> is the <code>secret</code> in our credential.json file.</p>
+<p>I use <code>Sys.getenv()</code> here for reasons I’ll get into in <a href="#sec-deployment" class="quarto-xref"><span class="quarto-unresolved-ref">sec-deployment</span></a>. You can use the <code>keyring</code> package and <code>httr2</code> has some built-in functions for you to use as well. But for now, let’s use <code>Sys.getenv()</code>.</p>
+<p>As Hadley Wickham writes in the <a href="https://httr2.r-lib.org/reference/secrets.html">secrets portion of the httr2 documentation</a>:</p>
+<blockquote class="blockquote">
+<p>While you can manage the key explicitly in a variable, it’s much easier to store in an environment variable. In real life, you should NEVER use <code>Sys.setenv()</code> to create this env var because you will also store the secret in your <code>.Rhistory</code>. Instead add it to your .Renviron using <code>usethis::edit_r_environ()</code> or similar.</p>
+</blockquote>
+<p>Add this to your .Renviron file:</p>
+<pre><code>OPENSKY_CLIENT_ID="{your_id}"
+OPENSKY_CLIENT_SECRET="{your_secret}"</code></pre>
+<p>For example:</p>
+<pre><code>OPENSKY_CLIENT_ID="youropenskyid@whatever_this_domain_was_probably_openskyapi.com"
+OPENSKY_CLIENT_SECRET="imnotputtingarealsecretinhereasanexamplewejustmetmaybegettoknowmealittlemorefirst"</code></pre>
+<p>After you’ve done that and defined client1 somewhere in your script (you can also define it within the functions below), we’ll modify our OpenSky functions slightly by adding one line: <code>req_oauth_client_credentials(client1) |&gt;</code></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>client1 <span class="ot">&lt;-</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">oauth_client</span>(</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">id =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENSKY_CLIENT_ID"</span>),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">token_url =</span> <span class="st">"https://auth.opensky-network.org/auth/realms/opensky-network/protocol/openid-connect/token"</span>,</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">secret =</span> <span class="fu">Sys.getenv</span>(<span class="st">"OPENSKY_CLIENT_SECRET"</span>),</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">auth =</span> <span class="st">"header"</span></span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a><span class="co"># The line we're adding:</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a><span class="co"># req_oauth_client_credentials(client1) |&gt;</span></span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>get_flight_track <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>      opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://opensky-network.org/api/tracks/all?"</span></span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb51-18"><a href="#cb51-18" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_oauth_client_credentials</span>(client1) <span class="sc">|&gt;</span></span>
+<span id="cb51-19"><a href="#cb51-19" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb51-20"><a href="#cb51-20" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>()</span>
+<span id="cb51-21"><a href="#cb51-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-22"><a href="#cb51-22" aria-hidden="true" tabindex="-1"></a>      check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb51-23"><a href="#cb51-23" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb51-24"><a href="#cb51-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-25"><a href="#cb51-25" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb51-26"><a href="#cb51-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-27"><a href="#cb51-27" aria-hidden="true" tabindex="-1"></a>      flight_track <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb51-28"><a href="#cb51-28" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb51-29"><a href="#cb51-29" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb51-30"><a href="#cb51-30" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="at">col =</span> path, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-31"><a href="#cb51-31" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename</span>(</span>
+<span id="cb51-32"><a href="#cb51-32" aria-hidden="true" tabindex="-1"></a>          <span class="at">timestamp =</span> path_1,</span>
+<span id="cb51-33"><a href="#cb51-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">latitude =</span> path_2,</span>
+<span id="cb51-34"><a href="#cb51-34" aria-hidden="true" tabindex="-1"></a>          <span class="at">longitude =</span> path_3,</span>
+<span id="cb51-35"><a href="#cb51-35" aria-hidden="true" tabindex="-1"></a>          <span class="at">baro_altitude =</span> path_4,</span>
+<span id="cb51-36"><a href="#cb51-36" aria-hidden="true" tabindex="-1"></a>          <span class="at">true_track =</span> path_5,</span>
+<span id="cb51-37"><a href="#cb51-37" aria-hidden="true" tabindex="-1"></a>          <span class="at">on_ground =</span> path_6</span>
+<span id="cb51-38"><a href="#cb51-38" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb51-39"><a href="#cb51-39" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(startTime, endTime, timestamp), \(x) <span class="fu">as_datetime</span>(x))) <span class="sc">|&gt;</span></span>
+<span id="cb51-40"><a href="#cb51-40" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb51-41"><a href="#cb51-41" aria-hidden="true" tabindex="-1"></a>        <span class="fu">arrange</span>(timestamp)</span>
+<span id="cb51-42"><a href="#cb51-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-43"><a href="#cb51-43" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (as_sf) {</span>
+<span id="cb51-44"><a href="#cb51-44" aria-hidden="true" tabindex="-1"></a>        flight_track <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb51-45"><a href="#cb51-45" aria-hidden="true" tabindex="-1"></a>          flight_track,</span>
+<span id="cb51-46"><a href="#cb51-46" aria-hidden="true" tabindex="-1"></a>          <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"baro_altitude"</span>),</span>
+<span id="cb51-47"><a href="#cb51-47" aria-hidden="true" tabindex="-1"></a>          <span class="at">dim =</span> <span class="st">"XYZ"</span>,</span>
+<span id="cb51-48"><a href="#cb51-48" aria-hidden="true" tabindex="-1"></a>          <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb51-49"><a href="#cb51-49" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb51-50"><a href="#cb51-50" aria-hidden="true" tabindex="-1"></a>          <span class="fu">group_by</span>(icao24, callsign) <span class="sc">|&gt;</span></span>
+<span id="cb51-51"><a href="#cb51-51" aria-hidden="true" tabindex="-1"></a>          <span class="fu">summarize</span>(<span class="at">do_union =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-52"><a href="#cb51-52" aria-hidden="true" tabindex="-1"></a>          <span class="fu">st_cast</span>(<span class="st">"LINESTRING"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-53"><a href="#cb51-53" aria-hidden="true" tabindex="-1"></a>          <span class="fu">st_wrap_dateline</span>()</span>
+<span id="cb51-54"><a href="#cb51-54" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb51-55"><a href="#cb51-55" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(flight_track)</span>
+<span id="cb51-56"><a href="#cb51-56" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb51-57"><a href="#cb51-57" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb51-58"><a href="#cb51-58" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(</span>
+<span id="cb51-59"><a href="#cb51-59" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Error occurred when retrieving flight track for {icao24}. {e} Check your icao24 value: {icao24} may be valid but currently inactive."</span></span>
+<span id="cb51-60"><a href="#cb51-60" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb51-61"><a href="#cb51-61" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb51-62"><a href="#cb51-62" aria-hidden="true" tabindex="-1"></a>        <span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24),</span>
+<span id="cb51-63"><a href="#cb51-63" aria-hidden="true" tabindex="-1"></a>        <span class="at">on_ground =</span> <span class="cn">TRUE</span></span>
+<span id="cb51-64"><a href="#cb51-64" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb51-65"><a href="#cb51-65" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb51-66"><a href="#cb51-66" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb51-67"><a href="#cb51-67" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb51-68"><a href="#cb51-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-69"><a href="#cb51-69" aria-hidden="true" tabindex="-1"></a>get_state_vector <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
+<span id="cb51-70"><a href="#cb51-70" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tryCatch</span>(</span>
+<span id="cb51-71"><a href="#cb51-71" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb51-72"><a href="#cb51-72" aria-hidden="true" tabindex="-1"></a>      opensky_response <span class="ot">&lt;-</span> <span class="fu">request</span>(</span>
+<span id="cb51-73"><a href="#cb51-73" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://opensky-network.org/api/states/all?"</span></span>
+<span id="cb51-74"><a href="#cb51-74" aria-hidden="true" tabindex="-1"></a>      ) <span class="sc">|&gt;</span></span>
+<span id="cb51-75"><a href="#cb51-75" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_oauth_client_credentials</span>(client1) <span class="sc">|&gt;</span></span>
+<span id="cb51-76"><a href="#cb51-76" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_url_query</span>(<span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24)) <span class="sc">|&gt;</span></span>
+<span id="cb51-77"><a href="#cb51-77" aria-hidden="true" tabindex="-1"></a>        <span class="fu">req_perform</span>()</span>
+<span id="cb51-78"><a href="#cb51-78" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-79"><a href="#cb51-79" aria-hidden="true" tabindex="-1"></a>      check_remaining_credits <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb51-80"><a href="#cb51-80" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_header</span>(<span class="st">"X-Rate-Limit-Remaining"</span>)</span>
+<span id="cb51-81"><a href="#cb51-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-82"><a href="#cb51-82" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_info</span>(<span class="st">"Remaining API credits: {check_remaining_credits}"</span>)</span>
+<span id="cb51-83"><a href="#cb51-83" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-84"><a href="#cb51-84" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> opensky_response <span class="sc">|&gt;</span></span>
+<span id="cb51-85"><a href="#cb51-85" aria-hidden="true" tabindex="-1"></a>        <span class="fu">resp_body_json</span>() <span class="sc">|&gt;</span></span>
+<span id="cb51-86"><a href="#cb51-86" aria-hidden="true" tabindex="-1"></a>        <span class="fu">as_tibble</span>() <span class="sc">|&gt;</span></span>
+<span id="cb51-87"><a href="#cb51-87" aria-hidden="true" tabindex="-1"></a>        <span class="fu">unnest_wider</span>(<span class="at">col =</span> states, <span class="at">names_sep =</span> <span class="st">"_"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb51-88"><a href="#cb51-88" aria-hidden="true" tabindex="-1"></a>        <span class="fu">rename</span>(</span>
+<span id="cb51-89"><a href="#cb51-89" aria-hidden="true" tabindex="-1"></a>          <span class="at">icao24 =</span> states_1,</span>
+<span id="cb51-90"><a href="#cb51-90" aria-hidden="true" tabindex="-1"></a>          <span class="at">callsign =</span> states_2,</span>
+<span id="cb51-91"><a href="#cb51-91" aria-hidden="true" tabindex="-1"></a>          <span class="at">origin_country =</span> states_3,</span>
+<span id="cb51-92"><a href="#cb51-92" aria-hidden="true" tabindex="-1"></a>          <span class="at">time_position =</span> states_4,</span>
+<span id="cb51-93"><a href="#cb51-93" aria-hidden="true" tabindex="-1"></a>          <span class="at">last_contact =</span> states_5,</span>
+<span id="cb51-94"><a href="#cb51-94" aria-hidden="true" tabindex="-1"></a>          <span class="at">longitude =</span> states_6,</span>
+<span id="cb51-95"><a href="#cb51-95" aria-hidden="true" tabindex="-1"></a>          <span class="at">latitude =</span> states_7,</span>
+<span id="cb51-96"><a href="#cb51-96" aria-hidden="true" tabindex="-1"></a>          <span class="at">baro_altitude =</span> states_8,</span>
+<span id="cb51-97"><a href="#cb51-97" aria-hidden="true" tabindex="-1"></a>          <span class="at">on_ground =</span> states_9,</span>
+<span id="cb51-98"><a href="#cb51-98" aria-hidden="true" tabindex="-1"></a>          <span class="at">velocity =</span> states_10,</span>
+<span id="cb51-99"><a href="#cb51-99" aria-hidden="true" tabindex="-1"></a>          <span class="at">true_track =</span> states_11,</span>
+<span id="cb51-100"><a href="#cb51-100" aria-hidden="true" tabindex="-1"></a>          <span class="at">vertical_rate =</span> states_12,</span>
+<span id="cb51-101"><a href="#cb51-101" aria-hidden="true" tabindex="-1"></a>          <span class="at">sensors =</span> states_13,</span>
+<span id="cb51-102"><a href="#cb51-102" aria-hidden="true" tabindex="-1"></a>          <span class="at">geo_altitude =</span> states_14,</span>
+<span id="cb51-103"><a href="#cb51-103" aria-hidden="true" tabindex="-1"></a>          <span class="at">squawk =</span> states_15,</span>
+<span id="cb51-104"><a href="#cb51-104" aria-hidden="true" tabindex="-1"></a>          <span class="at">special_purpose =</span> states_16,</span>
+<span id="cb51-105"><a href="#cb51-105" aria-hidden="true" tabindex="-1"></a>          <span class="at">position_source =</span> states_17</span>
+<span id="cb51-106"><a href="#cb51-106" aria-hidden="true" tabindex="-1"></a>        ) <span class="sc">|&gt;</span></span>
+<span id="cb51-107"><a href="#cb51-107" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="at">callsign =</span> <span class="fu">trimws</span>(callsign)) <span class="sc">|&gt;</span></span>
+<span id="cb51-108"><a href="#cb51-108" aria-hidden="true" tabindex="-1"></a>        <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(time, time_position, last_contact), \(x) {</span>
+<span id="cb51-109"><a href="#cb51-109" aria-hidden="true" tabindex="-1"></a>          <span class="fu">as_datetime</span>(x)</span>
+<span id="cb51-110"><a href="#cb51-110" aria-hidden="true" tabindex="-1"></a>        }))</span>
+<span id="cb51-111"><a href="#cb51-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-112"><a href="#cb51-112" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (as_sf) {</span>
+<span id="cb51-113"><a href="#cb51-113" aria-hidden="true" tabindex="-1"></a>        flight_position <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(</span>
+<span id="cb51-114"><a href="#cb51-114" aria-hidden="true" tabindex="-1"></a>          flight_position,</span>
+<span id="cb51-115"><a href="#cb51-115" aria-hidden="true" tabindex="-1"></a>          <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"longitude"</span>, <span class="st">"latitude"</span>, <span class="st">"baro_altitude"</span>),</span>
+<span id="cb51-116"><a href="#cb51-116" aria-hidden="true" tabindex="-1"></a>          <span class="at">dim =</span> <span class="st">"XYZ"</span>,</span>
+<span id="cb51-117"><a href="#cb51-117" aria-hidden="true" tabindex="-1"></a>          <span class="at">crs =</span> <span class="dv">4326</span></span>
+<span id="cb51-118"><a href="#cb51-118" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb51-119"><a href="#cb51-119" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb51-120"><a href="#cb51-120" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-121"><a href="#cb51-121" aria-hidden="true" tabindex="-1"></a>      <span class="fu">return</span>(flight_position)</span>
+<span id="cb51-122"><a href="#cb51-122" aria-hidden="true" tabindex="-1"></a>    },</span>
+<span id="cb51-123"><a href="#cb51-123" aria-hidden="true" tabindex="-1"></a>    <span class="at">error =</span> <span class="cf">function</span>(e) {</span>
+<span id="cb51-124"><a href="#cb51-124" aria-hidden="true" tabindex="-1"></a>      <span class="fu">log_error</span>(</span>
+<span id="cb51-125"><a href="#cb51-125" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Error occurred when retrieving state vector for {icao24}. {e} Check your icao24 value: {icao24} may be valid but currently inactive."</span></span>
+<span id="cb51-126"><a href="#cb51-126" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb51-127"><a href="#cb51-127" aria-hidden="true" tabindex="-1"></a>      flight_position <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb51-128"><a href="#cb51-128" aria-hidden="true" tabindex="-1"></a>        <span class="at">icao24 =</span> <span class="fu">str_to_lower</span>(icao24),</span>
+<span id="cb51-129"><a href="#cb51-129" aria-hidden="true" tabindex="-1"></a>        <span class="at">on_ground =</span> <span class="cn">TRUE</span></span>
+<span id="cb51-130"><a href="#cb51-130" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb51-131"><a href="#cb51-131" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb51-132"><a href="#cb51-132" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb51-133"><a href="#cb51-133" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Well, that was a lot. We still don’t even have all of our data yet! We’re still missing our fleet information. To be continued… in the next chapter.</p>
+
+
+</section>
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>I imagine there’s an opportunity for a self-deprecating joke here. I don’t want to write it out and you’re probably clever enough to infer it considering I’m more content sitting in front of my computer typing this than actually going outside.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./data_sources.html" class="pagination-link" aria-label="Finding Data in the Real World">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finding Data in the Real World</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./deployment.html" class="pagination-link" aria-label="Deploying via GitHub Actions">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
