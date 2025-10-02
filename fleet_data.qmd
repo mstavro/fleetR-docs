@@ -220,7 +220,7 @@ write_csv(united_full_fleet_info, "data/united_full_fleet_info.csv")
 
 Remember that function we built to go from registration numbers to icao24 addresses in @sec-get-data? We'll use that on a list of United mainline registrations. Let's pull the registration column from the full fleet info, making sure we're not passing any NAs and any untidy data that's slipped through, i.e., values not starting with "N" or anything with whitespace. We'll map the ```get_icao24_from_registration``` function to this vector and then write that out as ```data/compatible_registrations.csv```. Make sure you have a ```data``` folder set up in your project directory! You can also change the filepath as you wish.
 
-```{r}
+```{r, eval=FALSE}
 united_icao_list <- united_full_fleet_info |>
   drop_na(registration) |>
   filter(str_starts(registration, "N")) |>
