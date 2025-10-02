@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>fleet_data</title>
+<title>4&nbsp; Actually Getting Fleet Data (feat. googlesheets4) – United Explorer Project Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,39 +20,216 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="fleet_data_files/libs/clipboard/clipboard.min.js"></script>
-<script src="fleet_data_files/libs/quarto-html/quarto.js" type="module"></script>
-<script src="fleet_data_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="fleet_data_files/libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="fleet_data_files/libs/quarto-html/popper.min.js"></script>
-<script src="fleet_data_files/libs/quarto-html/tippy.umd.min.js"></script>
-<script src="fleet_data_files/libs/quarto-html/anchor.min.js"></script>
-<link href="fleet_data_files/libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="fleet_data_files/libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="fleet_data_files/libs/bootstrap/bootstrap.min.js"></script>
-<link href="fleet_data_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="fleet_data_files/libs/bootstrap/bootstrap-9e3ffae467580fdb927a41352e75a2e0.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./map_tables.html" rel="next">
+<link href="./get_data.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-372a093f5c725fc420399f0f1976dbeb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
 
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="nav-sidebar floating quarto-light">
 
-<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./fleet_data.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Actually Getting Fleet Data (feat. googlesheets4)</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">United Explorer Project Documentation</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Coming Up With a Project Idea</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_sources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finding Data in the Real World</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./fleet_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Actually Getting Fleet Data (feat. googlesheets4)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deployment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#sec-fleet" id="toc-sec-fleet" class="nav-link active" data-scroll-target="#sec-fleet"><span class="header-section-number">4.1</span> Getting United’s Fleet Data</a></li>
+  <li><a href="#customizing-the-fleet-tracker-to-another-airline" id="toc-customizing-the-fleet-tracker-to-another-airline" class="nav-link" data-scroll-target="#customizing-the-fleet-tracker-to-another-airline"><span class="header-section-number">4.2</span> Customizing the Fleet Tracker to Another Airline</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
 <main class="content" id="quarto-document-content">
 
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Actually Getting Fleet Data (feat. googlesheets4)</span></h1>
+</div>
 
 
 
-<section id="actually-getting-fleet-data-feat.-googlesheets4" class="level1">
-<h1>Actually Getting Fleet Data (feat. googlesheets4)</h1>
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Now that we’ve gotten our data from APIs, its time to get the icao24 addresses that will actually enable our functions to work.</p>
+<section id="sec-fleet" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="sec-fleet"><span class="header-section-number">4.1</span> Getting United’s Fleet Data</h2>
 <p>The API section was a lot. I promise this section is a lot shorter.</p>
 <p>After all that work in the API section, we’re ready to pull flight data from a series of icao24 values and… we don’t have any icao24 values. Okay. Where are we going to get a comprehensive list of those for the United mainline fleet? Turns out it actually exists thanks to an open-source hobbyist effort at <a href="https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlview">this Google sheet</a>.</p>
-<p>What’s the best way to go about grabbing this information? Glad you asked, there’s a package for that: <code>googlesheets4</code>. We’ll make a new R script for the process of pulling the United fleet called <code>rebuild_fleet_info.R</code> so, when we get to <strong>?@sec-deployment</strong>, we can update the list of active United mainline aircraft on a schedule.</p>
+<p>What’s the best way to go about grabbing this information? Glad you asked, there’s a package for that: <code>googlesheets4</code>. We’ll make a new R script for the process of pulling the United fleet called <code>rebuild_fleet_info.R</code> so, when we get to <a href="deployment.html#sec-deployment" class="quarto-xref"><span>Section 6.2</span></a>, we can update the list of active United mainline aircraft on a schedule.</p>
 <p>Reading this Google Sheet with <code>googlesheets4</code> is simple - all we need is the ID? Where’s the ID you ask? Well, in this url:</p>
 <blockquote class="blockquote">
 <p>https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlview</p>
@@ -60,11 +237,228 @@ ul.task-list li input[type="checkbox"] {
 <p>It’s that cat-walked-across-my-keyboard hodgepodge of letters between spreadsheets/d/ and /htmlview</p>
 <iframe id="pageswitcher-content" frameborder="0" marginheight="0" marginwidth="0" src="https://docs.google.com/spreadsheets/d/1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo/htmlembed/sheet?headers=false&amp;gid=0" style="display: block; width: 100%; height: 100%;">
 </iframe>
-<p>In this spreadsheet, there’s a bunch of sheets that are</p>
+<p>In this spreadsheet, there’s a bunch of sheets that are sort of similar but have small differences that make our lives a little bit difficult. For example, the header for A319 configurations says “Congfiguration” instead of “Configuration”, and there are several other differences here and there. I’ll save you the time of looking for the differences. All you need to know is that we’ll use <code>any_of()</code> to check if any of the different header options shows up in a given sheet for columns with this type of variation. The second row in each sheet also doesn’t have any machine readable data, at least not in a way that will severely complicate the column structure, so we’ll get rid of it using <code>slice(-1)</code>, since it’ll be the first row after the header is processed. We’ll also invoke <code>gs_deauth()</code>. <code>googlesheets4</code> asks for an API key for some functions, but since we’re just reading sheets, we don’t need access to Google’s API. We’ll further coerce everything to character to make our lives easier when we try to <code>bind_rows()</code> in a second.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>united_fleet_info <span class="ot">&lt;-</span> <span class="cf">function</span>(sheet) {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gs4_deauth</span>()</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">read_sheet</span>(<span class="st">"1ZlYgN_IZmd6CSx_nXnuP0L0PiodapDRx3RmNkIpxXAo"</span>, <span class="at">sheet =</span> sheet) <span class="sc">|&gt;</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">slice</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">rename</span>(</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>      <span class="at">aircraft_model =</span> <span class="dv">1</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>      <span class="at">registration =</span> <span class="st">`</span><span class="at">Reg #</span><span class="st">`</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">any_of</span>(</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">c</span>(</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>          <span class="at">delivered =</span> <span class="st">"Delivery"</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>          <span class="at">delivered =</span> <span class="st">"Delivered"</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>          <span class="at">delivered =</span> <span class="st">"Delivery Yr"</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>          <span class="at">delivered =</span> <span class="st">"Delvr"</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>          <span class="at">config =</span> <span class="st">"Configuration"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>          <span class="at">config =</span> <span class="st">"Congfiguration"</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">ife =</span> IFE,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>      <span class="at">wifi =</span> WiFi,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>      <span class="at">power =</span> Power</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="fu">select</span>(</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>      aircraft_model,</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>      registration,</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>      delivered,</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>      config,</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>      ife,</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>      wifi,</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>      power,</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>      J,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>      F,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>      PP,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">E+</span><span class="st">`</span>,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>      Y</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">everything</span>(), \(x) <span class="fu">as.character</span>(x)))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Alright. Now we can map this to all sheets in the overarching Google Sheets document. We want to add some flair to our tables later - one easy way to do that is to include an illustrated side profile of each aircraft we’re tracking. United actually posts these images <a href="https://www.united.com/en/us/fly/company/aircraft/uniteds-fleet.html">here</a>, so we can piggy-back off of United’s content delivery network to show these images. Moreover, we can grab the seatmaps as well and match them to the configurations contained in these sheets.</p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Again, there are varied approaches you can take here. A better approach for permanence would be to download all the images, host them in your repo, and serve them using <code>local_image()</code> or an equivalent function. I’m adopting some assumptions here in pursuing the CDN and <code>web_image()</code> approach, namely that United’s CDN is reliable and that they won’t suddenly decide to change the locations of their media assets.</p>
+<p>Also, I’m sorry in advance to any aviation purists out there. United does not make side profiles for all their aircraft publicly available. This is particularly noticeable for the Airbus A319/A320/A321neo and the Boeing 737 variations, for which United simply put the image of one aircraft up (the A319 and a 737 MAX variant) and called it a day. If anyone knows where the other assets are located, that’d be a small but cool way to update this project.</p>
+<p>You might have an easier go of this with other airlines. Lufthansa, for example, <a href="https://www.lufthansa.com/us/en/seat-maps">has published all kinds of side profiles of their aircraft</a>, which makes me rethink whether I should’ve done this with Lufthansa aircraft instead. I digress.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>united_full_fleet_info <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">map</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>, \(x) <span class="fu">united_fleet_info</span>(x))) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">aircraft_image =</span> <span class="fu">case_match</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>      aircraft_model,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">"319"</span> <span class="sc">~</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png"</span>, <span class="co"># this is all United has public facing for 'Airbus'</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">"320"</span> <span class="sc">~</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png"</span>, <span class="co"># maybe a320/21 exist out there, some more google dorking is needed</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"21N"</span> <span class="sc">~</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7c9ce478782db0ed/original/Airbus-A319-2x.png"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"73G"</span> <span class="sc">~</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"738"</span> <span class="sc">~</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      <span class="st">"38M"</span> <span class="sc">~</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"739"</span> <span class="sc">~</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>      <span class="st">"739ER"</span> <span class="sc">~</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      <span class="st">"39M"</span> <span class="sc">~</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/e1fdecdb14fce86/original/737-MAX-2x.png"</span>,</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="st">"752"</span> <span class="sc">~</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/4b144548aa973560/original/757-200-2x.png"</span>,</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      <span class="st">"753"</span> <span class="sc">~</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/4b144548aa973560/original/757-200-2x.png"</span>,</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      <span class="st">"763ER"</span> <span class="sc">~</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/1b2147dcd5318024/original/767-300-2x.png"</span>,</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>      <span class="st">"764ER"</span> <span class="sc">~</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/1b2147dcd5318024/original/767-300-2x.png"</span>,</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77G"</span> <span class="sc">~</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77M"</span> <span class="sc">~</span></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77O"</span> <span class="sc">~</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77N"</span> <span class="sc">~</span></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77U"</span> <span class="sc">~</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>      <span class="st">"772ER"</span> <span class="sc">~</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77W"</span> <span class="sc">~</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2c8d559fcfcec38f/original/777-300-2x.png"</span>,</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-8"</span> <span class="sc">~</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png"</span>,</span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-10"</span> <span class="sc">~</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png"</span>,</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-9"</span> <span class="sc">~</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/4a29a23b8c38ff55/original/787-8-png-2x.png"</span></span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>    <span class="at">aircraft_model =</span> <span class="fu">case_match</span>(</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>      aircraft_model,</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>      <span class="st">"319"</span> <span class="sc">~</span> <span class="st">"Airbus A319"</span>,</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>      <span class="st">"320"</span> <span class="sc">~</span> <span class="st">"Airbus A320"</span>,</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>      <span class="st">"21N"</span> <span class="sc">~</span> <span class="st">"Airbus A321neo"</span>,</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>      <span class="st">"73G"</span> <span class="sc">~</span> <span class="st">"Boeing 737-700"</span>,</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>      <span class="st">"738"</span> <span class="sc">~</span> <span class="st">"Boeing 737-800"</span>,</span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>      <span class="st">"38M"</span> <span class="sc">~</span> <span class="st">"Boeing 737 MAX 8"</span>,</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>      <span class="st">"739"</span> <span class="sc">~</span> <span class="st">"Boeing 737-900"</span>,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>      <span class="st">"739ER"</span> <span class="sc">~</span> <span class="st">"Boeing 737-900ER"</span>,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>      <span class="st">"39M"</span> <span class="sc">~</span> <span class="st">"Boeing 737 MAX 9"</span>,</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>      <span class="st">"752"</span> <span class="sc">~</span> <span class="st">"Boeing 757-200"</span>,</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>      <span class="st">"753"</span> <span class="sc">~</span> <span class="st">"Boeing 757-300"</span>,</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>      <span class="st">"763ER"</span> <span class="sc">~</span> <span class="st">"Boeing 767-300ER"</span>,</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>      <span class="st">"764ER"</span> <span class="sc">~</span> <span class="st">"Boeing 767-400ER"</span>,</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77G"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200"</span>,</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77M"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200"</span>,</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77O"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200ER"</span>,</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77N"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200ER"</span>,</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77U"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200ER"</span>,</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>      <span class="st">"772ER"</span> <span class="sc">~</span> <span class="st">"Boeing 777-200ER"</span>,</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>      <span class="st">"77W"</span> <span class="sc">~</span> <span class="st">"Boeing 777-300"</span>,</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-8"</span> <span class="sc">~</span> <span class="st">"Boeing 787-8 Dreamliner"</span>,</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-10"</span> <span class="sc">~</span> <span class="st">"Boeing 787-10 Dreamliner"</span>,</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>      <span class="st">"787-9"</span> <span class="sc">~</span> <span class="st">"Boeing 787-9 Dreamliner"</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a>    <span class="at">aircraft_seatmap =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Airbus A319"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"12F/36E+/78Y"</span> <span class="sc">~</span></span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/6c2619139fcc1674/original/Airbus-319_SeatMap.png"</span>,</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Airbus A320"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"12F/42E+/96Y"</span> <span class="sc">~</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/77611d0be598e4e2/original/Airbus-320_SeatMap.png"</span>,</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Airbus A321neo"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/57E+/123Y"</span> <span class="sc">~</span></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/5f1be20d804eac0b/original/0043-A-Airbus-321-NEO_SeatMap_3850x1100.jpg"</span>,</span>
+<span id="cb2-89"><a href="#cb2-89" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-700"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"12F/36E+/78Y"</span> <span class="sc">~</span></span>
+<span id="cb2-90"><a href="#cb2-90" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/75349c6fec922b74/original/737-700_Seatmap.png"</span>,</span>
+<span id="cb2-91"><a href="#cb2-91" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-800"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"16F/42E+/108Y"</span> <span class="sc">~</span></span>
+<span id="cb2-92"><a href="#cb2-92" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/59d58a3109d4fdcf/original/737_800-V3_Seatmap.png"</span>,</span>
+<span id="cb2-93"><a href="#cb2-93" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-800"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"16F/54E+/96Y"</span> <span class="sc">~</span></span>
+<span id="cb2-94"><a href="#cb2-94" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/478c8a4514af749f/original/737_800-V2_Seatmap.png"</span>,</span>
+<span id="cb2-95"><a href="#cb2-95" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-800"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"16F/48E+/102Y"</span> <span class="sc">~</span></span>
+<span id="cb2-96"><a href="#cb2-96" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/2e41eddf5126cca/original/737_800-V1_Seatmap.png"</span>,</span>
+<span id="cb2-97"><a href="#cb2-97" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737 MAX 8"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"16F/54E+/96Y"</span> <span class="sc">~</span></span>
+<span id="cb2-98"><a href="#cb2-98" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/468bc1680a021607/original/737_8_Max_-16_150-_2272px_62colors.webp"</span>,</span>
+<span id="cb2-99"><a href="#cb2-99" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-900"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/42E+/117Y"</span> <span class="sc">~</span></span>
+<span id="cb2-100"><a href="#cb2-100" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7ecc06665f5eadc5/original/737-900-V1_Seatmap.png"</span>,</span>
+<span id="cb2-101"><a href="#cb2-101" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-900"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/45E+/114Y"</span> <span class="sc">~</span></span>
+<span id="cb2-102"><a href="#cb2-102" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/672e436134393ac8/original/737-900-V3_Seatmap.png"</span>,</span>
+<span id="cb2-103"><a href="#cb2-103" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-900ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/42E+/117Y"</span> <span class="sc">~</span></span>
+<span id="cb2-104"><a href="#cb2-104" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7ecc06665f5eadc5/original/737-900-V1_Seatmap.png"</span>,</span>
+<span id="cb2-105"><a href="#cb2-105" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737-900ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/45E+/114Y"</span> <span class="sc">~</span></span>
+<span id="cb2-106"><a href="#cb2-106" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/672e436134393ac8/original/737-900-V3_Seatmap.png"</span>,</span>
+<span id="cb2-107"><a href="#cb2-107" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737 MAX 9"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/45E+/114Y"</span> <span class="sc">~</span></span>
+<span id="cb2-108"><a href="#cb2-108" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/478424e0a7f686a3/original/737-9_ICR-B3D_B3Di11142017_3850x1100.jpg"</span>,</span>
+<span id="cb2-109"><a href="#cb2-109" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 737 MAX 9"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"20F/48E+/111Y"</span> <span class="sc">~</span></span>
+<span id="cb2-110"><a href="#cb2-110" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/61c72950276939c2/original/737-900-MAX9_Seatmap.png"</span>,</span>
+<span id="cb2-111"><a href="#cb2-111" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 757-200"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"16J/42E+/118Y"</span> <span class="sc">~</span></span>
+<span id="cb2-112"><a href="#cb2-112" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/5cd6b8b29de9fe1e/original/0024_757-200_SeatMap_3850x1100.png"</span>,</span>
+<span id="cb2-113"><a href="#cb2-113" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 757-300"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"24F/54E+/156Y"</span> <span class="sc">~</span></span>
+<span id="cb2-114"><a href="#cb2-114" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/6ad7c68d690247ad/original/757-300_SeatMap.png"</span>,</span>
+<span id="cb2-115"><a href="#cb2-115" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 767-300ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"30J/24PP/32E+/113Y"</span> <span class="sc">~</span></span>
+<span id="cb2-116"><a href="#cb2-116" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7f46e01710b8c8ee/original/767-300-V3_SeatMap.png"</span>,</span>
+<span id="cb2-117"><a href="#cb2-117" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 767-300ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"46J/22PE/43E+/56Y"</span> <span class="sc">~</span></span>
+<span id="cb2-118"><a href="#cb2-118" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/3a404651615a2ff7/original/767-300-V2_SeatMap.png"</span>,</span>
+<span id="cb2-119"><a href="#cb2-119" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 767-400ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"34J/24PE/48E+/125Y"</span> <span class="sc">~</span></span>
+<span id="cb2-120"><a href="#cb2-120" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/402d979292c41b69/original/767-400_V2_Seatmap.png"</span>,</span>
+<span id="cb2-121"><a href="#cb2-121" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 777-200"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"28F/102E+/234Y"</span> <span class="sc">~</span></span>
+<span id="cb2-122"><a href="#cb2-122" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/5f45564c1af4723c/original/777-200_V2_SeatMap.png"</span>,</span>
+<span id="cb2-123"><a href="#cb2-123" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 777-200ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"32F/124E+/206Y"</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb2-124"><a href="#cb2-124" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 777-200ER"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"50J/24PE/46E+/156Y"</span> <span class="sc">~</span></span>
+<span id="cb2-125"><a href="#cb2-125" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/135e5704439135f4/original/777-200_V1_SeatMap.png"</span>,</span>
+<span id="cb2-126"><a href="#cb2-126" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 777-300"</span> <span class="sc">&amp;</span> config <span class="sc">==</span> <span class="st">"60J/24PE/62E+/204Y"</span> <span class="sc">~</span></span>
+<span id="cb2-127"><a href="#cb2-127" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/7d514e882a9d133f/original/777-300ER_SeatMap.png"</span>,</span>
+<span id="cb2-128"><a href="#cb2-128" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 787-8 Dreamliner"</span> <span class="sc">&amp;</span></span>
+<span id="cb2-129"><a href="#cb2-129" aria-hidden="true" tabindex="-1"></a>        config <span class="sc">==</span> <span class="st">"28J/21PE/36E+/158Y"</span> <span class="sc">~</span></span>
+<span id="cb2-130"><a href="#cb2-130" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/c8b1f1d11e6c118/original/787-8_SeatMap.png"</span>,</span>
+<span id="cb2-131"><a href="#cb2-131" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 787-10 Dreamliner"</span> <span class="sc">&amp;</span></span>
+<span id="cb2-132"><a href="#cb2-132" aria-hidden="true" tabindex="-1"></a>        config <span class="sc">==</span> <span class="st">"44J/21PE/54E+/199Y"</span> <span class="sc">~</span></span>
+<span id="cb2-133"><a href="#cb2-133" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/3ccf19b38c5430c2/original/787-10_SeatMap.png"</span>,</span>
+<span id="cb2-134"><a href="#cb2-134" aria-hidden="true" tabindex="-1"></a>      aircraft_model <span class="sc">==</span> <span class="st">"Boeing 787-9 Dreamliner"</span> <span class="sc">&amp;</span></span>
+<span id="cb2-135"><a href="#cb2-135" aria-hidden="true" tabindex="-1"></a>        config <span class="sc">==</span> <span class="st">"48J/21PE/39E+/149Y"</span> <span class="sc">~</span></span>
+<span id="cb2-136"><a href="#cb2-136" aria-hidden="true" tabindex="-1"></a>        <span class="st">"https://media.united.com/assets/m/6d72d9a9f884e8d2/original/787-9_SeatMap.png"</span></span>
+<span id="cb2-137"><a href="#cb2-137" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-138"><a href="#cb2-138" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb2-139"><a href="#cb2-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(aircraft_image)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We’ll drop <code>NA</code> on the <code>aircraft_image</code> column, as information rows, similar to row 2, that do not conform to the schema are missing information on <code>aircraft_model</code> (but are not blank!), therefore missing information on <code>aircraft_image</code>. Now we can save that to a CSV.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(united_full_fleet_info, <span class="st">"data/united_full_fleet_info.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Remember that function we built to go from registration numbers to icao24 addresses in <a href="get_data.html" class="quarto-xref"><span>Chapter 3</span></a>? We’ll use that on a list of United mainline registrations. Let’s pull the registration column from the full fleet info, making sure we’re not passing any NAs and any untidy data that’s slipped through, i.e., values not starting with “N” or anything with whitespace. We’ll map the <code>get_icao24_from_registration</code> function to this vector and then write that out as <code>data/compatible_registrations.csv</code>. Make sure you have a <code>data</code> folder set up in your project directory! You can also change the filepath as you wish.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>united_icao_list <span class="ot">&lt;-</span> united_full_fleet_info <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(registration) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_starts</span>(registration, <span class="st">"N"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">registration =</span> <span class="fu">trimws</span>(registration)) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(registration)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>compatible_registrations <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(<span class="fu">map</span>(</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  united_icao_list,</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  get_icao24_from_registration</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(compatible_registrations, <span class="st">"data/compatible_registrations.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="customizing-the-fleet-tracker-to-another-airline" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="customizing-the-fleet-tracker-to-another-airline"><span class="header-section-number">4.2</span> Customizing the Fleet Tracker to Another Airline</h2>
+<p>It’s worth adding a quick note that if you want to take this project and run with another airline, this is the major piece you’ll need to change out in order to do so. <a href="get_data.html" class="quarto-xref"><span>Chapter 3</span></a> will work universally for whatever airline you choose, but you’ll need a list of icao24 addresses to pass through these functions. Apart from getting different icao24 addresses, you’ll probably want a table with information on the fleet similar to what’s been presented in this section - at least the aircraft models and links to visuals you’d like to include. If you change the schema, you’ll probably need to change some of the table code, covered in the next chapter.</p>
+
+
 </section>
 
-</main>
-<!-- /main column -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -465,6 +859,18 @@ ul.task-list li input[type="checkbox"] {
     }
   });
   </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./get_data.html" class="pagination-link" aria-label="Actually Getting Flight Data (feat. httr2)">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./map_tables.html" class="pagination-link" aria-label="Who Invited a Map to the Table Contest?">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
 </div> <!-- /content -->
 
 

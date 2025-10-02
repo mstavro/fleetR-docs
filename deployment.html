@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Deploying via GitHub Actions – United Explorer Project Documentation</title>
+<title>6&nbsp; Deploying via GitHub Actions – United Explorer Project Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -41,7 +41,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-2778ace39694e72d95bda470d4070c24.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-372a093f5c725fc420399f0f1976dbeb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -82,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./deployment.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./deployment.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -135,14 +135,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./fleet_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Actually Getting Fleet Data (feat. googlesheets4)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./deployment.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
   </div>
 </li>
     </ul>
@@ -155,11 +161,11 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#putting-into-quarto-and-styling" id="toc-putting-into-quarto-and-styling" class="nav-link active" data-scroll-target="#putting-into-quarto-and-styling"><span class="header-section-number">5.1</span> Putting into Quarto and Styling</a></li>
-  <li><a href="#sec-deployment" id="toc-sec-deployment" class="nav-link" data-scroll-target="#sec-deployment"><span class="header-section-number">5.2</span> Setting up GitHub Pages and GitHub Actions</a>
+  <li><a href="#putting-into-quarto-and-styling" id="toc-putting-into-quarto-and-styling" class="nav-link active" data-scroll-target="#putting-into-quarto-and-styling"><span class="header-section-number">6.1</span> Putting into Quarto and Styling</a></li>
+  <li><a href="#sec-deployment" id="toc-sec-deployment" class="nav-link" data-scroll-target="#sec-deployment"><span class="header-section-number">6.2</span> Setting up GitHub Pages and GitHub Actions</a>
   <ul class="collapse">
-  <li><a href="#github-pages" id="toc-github-pages" class="nav-link" data-scroll-target="#github-pages"><span class="header-section-number">5.2.1</span> GitHub Pages</a></li>
-  <li><a href="#updating-fleet-info" id="toc-updating-fleet-info" class="nav-link" data-scroll-target="#updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</a></li>
+  <li><a href="#github-pages" id="toc-github-pages" class="nav-link" data-scroll-target="#github-pages"><span class="header-section-number">6.2.1</span> GitHub Pages</a></li>
+  <li><a href="#updating-fleet-info" id="toc-updating-fleet-info" class="nav-link" data-scroll-target="#updating-fleet-info"><span class="header-section-number">6.2.2</span> Updating Fleet Info</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -169,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></h1>
+<h1 class="title"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></h1>
 </div>
 
 
@@ -187,10 +193,10 @@ ul.task-list li input[type="checkbox"] {
 
 
 <p>We’re at the last part. We laugh, we cried, we made some friends along the way - okay, we didn’t do any of that. We did make a lot of tables, though. Now all that’s left is sharing them with the world.</p>
-<section id="putting-into-quarto-and-styling" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="putting-into-quarto-and-styling"><span class="header-section-number">5.1</span> Putting into Quarto and Styling</h2>
-<p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 4.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
-<p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a>, but here’s the full SCSS you might want to have:</p>
+<section id="putting-into-quarto-and-styling" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="putting-into-quarto-and-styling"><span class="header-section-number">6.1</span> Putting into Quarto and Styling</h2>
+<p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 5.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
+<p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a>, but here’s the full SCSS you might want to have:</p>
 <pre><code>$navbar-bg: black;
 $navbar-fg: white;
 
@@ -242,8 +248,8 @@ color:
   secondary: white</code></pre>
 <p>Finally, you’re probably going to want a <code>_quarto.yml</code> file for your project. I’ll get to that below.</p>
 </section>
-<section id="sec-deployment" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="sec-deployment"><span class="header-section-number">5.2</span> Setting up GitHub Pages and GitHub Actions</h2>
+<section id="sec-deployment" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="sec-deployment"><span class="header-section-number">6.2</span> Setting up GitHub Pages and GitHub Actions</h2>
 <p>I guess it’s worth talking about the strategies of deployment quickly. Side note that Hadley Wickham has a <a href="https://r-in-production.org/">book-in-progress on this</a> and you should probably read it, because what I’m about to give you is the cliff-notes version of a workshop based on said book.</p>
 <p>Basically, the first step we should think about when we think through deployment is longevity - i.e., managing package versions. We’ve got three options for this:</p>
 <ol type="1">
@@ -258,8 +264,8 @@ color:
 <li>A GitHub action to render and deploy our index.qmd to pages</li>
 <li>A GitHub action to pull the United fleet Google Sheet every so often in case United takes new deliveries (or some planes go inactive)</li>
 </ul>
-<section id="github-pages" class="level3" data-number="5.2.1">
-<h3 data-number="5.2.1" class="anchored" data-anchor-id="github-pages"><span class="header-section-number">5.2.1</span> GitHub Pages</h3>
+<section id="github-pages" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="github-pages"><span class="header-section-number">6.2.1</span> GitHub Pages</h3>
 <p>I’m assuming you have GitHub initialized. If you don’t, start with this in the console while in your project directory:</p>
 <p><code>usethis::use_github()</code></p>
 <p>Before you go any further, remember when we introduced some secrets in <a href="get_data.html#sec-opensky" class="quarto-xref"><span>Section 3.1.3</span></a>? Yeah, we’re probably going to want to tell GitHub about those. It’s okay, I don’t think GitHub is interested in telling everyone your secrets.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Navigate to your repository, then go to “Settings”, and go to “Secrets and Variables.” You’re going to want to add two repository secrets, one called OPENSKY_CLIENT_ID and the other OPENSKY_CLIENT_SECRET, corresponding to your ID and SECRET in your credentials.json/.Renviron from earlier.</p>
@@ -370,8 +376,8 @@ permissions:
 <pre><code>        env:
           OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
           OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
-<section id="troubleshooting" class="level4" data-number="5.2.1.1">
-<h4 data-number="5.2.1.1" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">5.2.1.1</span> Troubleshooting</h4>
+<section id="troubleshooting" class="level4" data-number="6.2.1.1">
+<h4 data-number="6.2.1.1" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">6.2.1.1</span> Troubleshooting</h4>
 <p>Chances are, you’re going to run into some obstacles. I hope that providing you with the .yml will mitigate this somewhat, but here’s some general notes about failed deployments using this code:</p>
 <ul>
 <li>Some failed deployments are normal. The solution proposed in <a href="data_sources.html#sec-tolled-boxes" class="quarto-xref"><span>Section 2.1.1</span></a> relies, partly, on chance, in the sense that you’ll actually pull live aircraft. You may very well pull a segment of aircraft that are all sitting on the ground in a given moment. In this case, the Quarto script fails on purpose because there’s nothing to visualize. And it’s entirely possible that you could have long stints where you pull nothing, just because you’re pulling the wrong aircraft on the network. The best solution here is just to take a larger cross section of aircraft, perhaps trading off on the refresh period (i.e., 30/40 aircraft every hour, on the hour).</li>
@@ -383,8 +389,8 @@ permissions:
 <p>Here, <code>tbl$destination_plausible</code> is missing, likely because no aircraft were returned from our API functions. Similar errors include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely due to a missing table.</p>
 </section>
 </section>
-<section id="updating-fleet-info" class="level3" data-number="5.2.2">
-<h3 data-number="5.2.2" class="anchored" data-anchor-id="updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</h3>
+<section id="updating-fleet-info" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="updating-fleet-info"><span class="header-section-number">6.2.2</span> Updating Fleet Info</h3>
 <p>The last piece is automatically refreshing the fleet info from Google Sheets. We’ll use a separate actions <code>.yml</code> file for that called <code>update_ua_fleet.yml</code>.</p>
 <pre><code>name: Check for changes to the United mainline fleet
 
@@ -876,7 +882,7 @@ permissions:
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
       <a href="./map_tables.html" class="pagination-link" aria-label="Who Invited a Map to the Table Contest?">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span>
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">

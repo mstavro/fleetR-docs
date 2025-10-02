@@ -20,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -42,7 +77,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-2778ace39694e72d95bda470d4070c24.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-372a093f5c725fc420399f0f1976dbeb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -136,14 +171,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="./fleet_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Actually Getting Fleet Data (feat. googlesheets4)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./deployment.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
   </div>
 </li>
     </ul>
@@ -157,6 +198,7 @@ ul.task-list li input[type="checkbox"] {
    
   <ul>
   <li><a href="#why-track-the-united-fleet" id="toc-why-track-the-united-fleet" class="nav-link active" data-scroll-target="#why-track-the-united-fleet"><span class="header-section-number">1.1</span> Why Track the United Fleet?</a></li>
+  <li><a href="#packages-youll-need" id="toc-packages-youll-need" class="nav-link" data-scroll-target="#packages-youll-need"><span class="header-section-number">1.2</span> Packages You’ll Need</a></li>
   </ul>
 </nav>
     </div>
@@ -190,9 +232,30 @@ ul.task-list li input[type="checkbox"] {
 <p>I think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you’re likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <section id="why-track-the-united-fleet" class="level2" data-number="1.1">
 <h2 data-number="1.1" class="anchored" data-anchor-id="why-track-the-united-fleet"><span class="header-section-number">1.1</span> Why Track the United Fleet?</h2>
-<p>I’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest.</p>
+<p>I’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I’ve flown United recently, so I guess there’s some recency bias at play.</p>
 <p>Web development for R also is an area of interest for me. I’m really impressed at how far the ecosystem stretches with Quarto and Shiny. What’s more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It’s kind of like snapping Lego bricks together.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we’re about to find out!</p>
 <p>Finally, I had the pleasure of attending the R in Production workshop at posit::conf(2025) which taught me a lot of cool things about, you guessed it, putting R in production. Neat things with GitHub Actions and moving away from the point and click approach of programming with R. This seems like a prime opportunity to put what I learned into practice!<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
+</section>
+<section id="packages-youll-need" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="packages-youll-need"><span class="header-section-number">1.2</span> Packages You’ll Need</h2>
+<p>Before we get into it, you’ll need the following packages:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Don't forget about pak!</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span>(<span class="st">"pak"</span> <span class="sc">%in%</span> <span class="fu">installed.packages</span>())) {</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">install.packages</span>(<span class="st">"pak"</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"tidyverse"</span>) <span class="do">## I mean, you don't need the whole tidyverse, but it doesn't hurt. You could probably get away with dplyr, purrr, googlesheets4, and readr.</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"httr2"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"mapgl"</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"gt"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"gtExtras"</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"sf"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"logger"</span>)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"glue"</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"bslib"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"fontawesome"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 
 
 </section>
