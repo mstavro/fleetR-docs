@@ -1,4 +1,4 @@
-name: Pull flights, render, and publish
+name: Compile and publish Quarto book
 on:
   workflow_dispatch:
   push:
