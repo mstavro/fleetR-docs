@@ -297,7 +297,7 @@ get_route_information <- function(callsign) {
 get_route_information("UAL881")
 ```
 
-Alright, just a few more things to take care of. Some of these columns now have a double underscore. Additionally, we don't have the callsign info anywhere in this tibble, so we'll need to mutate that in using ```mutate(callsign = callsign)```. Let's also add some error handling similar to the other functions, where an error returns a tibble in a similar schema filled with NAs, parsed down to only the columns used by table creation functions later in the project.
+Alright, just a few more things to take care of. Some of these columns now have a double underscore. Additionally, we don't have the callsign info anywhere in this tibble, so we'll need to mutate that in using ```mutate(callsign = callsign)```. Let's also add some error handling similar to the other functions, where an error returns a tibble in a similar schema filled with ```NA```, parsed down to only the columns used by table creation functions later in the project.
 
 ```{r}
 get_route_information <- function(callsign) {
@@ -338,11 +338,11 @@ get_route_information <- function(callsign) {
         origin_airports_iata = NA,
         origin_airports_name = NA,
         origin_airports_countryiso2 = NA,
-        origin_plausible = NA,
+        origin_plausible = 0, ### See the callout box below
         destination_airports_iata = NA,
         destination_airports_name = NA,
         destination_airports_countryiso2 = NA,
-        destination_plausible = NA,
+        destination_plausible = 0,
       )
       return(route)
     }
@@ -353,6 +353,15 @@ get_route_information("UAL881")
 ```
 
 And here's our final product!
+
+::: {.callout-important}
+Hi. Future me interjecting here in the hope of saving you some frustration. Remember when I said we were going to fill out the tibble when catching errors with ```NA``` for every variable? Turns out doing that, and deferring the correction of ```origin_plausible``` and ```destination_plausible``` to another function is actually a bad idea that's going to cause some headaches down the line. It's better for us to handle this at the source so we don't run into issues, namely the issue of trying to check if these columns are equal to 1 or not, and giving our machine an existential crisis when it tries to determine if ```NA == 1```.
+
+As such, I've made sure that ```origin_plausible``` and ```destination_plausible``` return 0 here. I've further made sure in @sec-map-table to drop any ```NA``` values from these columns. I think it's a sensical return, as given that we can't determine where the origin/destination are, the result isn't plausible, by virtue of there being no result (and I don't think it's plausible that a plane appeared/disappeared, even though I vaguely remember there being a network TV and then a Netflix show about this premise).
+
+Hopefully that'll save you from this:
+![](assets/failed_deployments.png)
+:::
 
 ### Interacting with the OpenSky API {#sec-opensky}
 Even though I've listed the OpenSky API last, it isn't really *that* daunting beyond authorizing your credentials. The authorization piece adds a little extra bit of complexity, but nothing we can't handle. As alluded to in @sec-tolled-boxes, the OpenSky API uses API credits as a way to deal with demand (among other things). For non-registered users, the limit is 400 credits a day, which roughly comes out to about 100 flights a day. That's not very much. Luckily, with a simple and *free* registration, we can get ourselves up to 4,000 credits a day, or 1,000 flights a day instead! 

@@ -611,14 +611,6 @@ united_logo <- web_image(
   height = "1em"
 )
 
-if (is.null(tbl$origin_plausible) | is.na(tbl$origin_plausible)) {
-  tbl$origin_plausible <- 0
-}
-
-if (is.null(tbl$destination_plausible | is.na(tbl$destination_plausible))) {
-  tbl$destination_plausible <- 0
-}
-
 ### Add fallbacks in case route data is inaccurate. API provides a 0/1 metric for plausibility.
 if (tbl$origin_plausible == 1) {
   origin_value_box <- value_box(
@@ -946,14 +938,6 @@ generate_map_tables <- function(df, specified_callsign, output_html = TRUE) {
     "https://www.united.com/2500e4e62233fbfe8ac6.unitedLogoNew.svg",
     height = "1em"
   )
-
-  if (is.null(tbl$origin_plausible) | is.na(tbl$origin_plausible)) {
-    tbl$origin_plausible <- 0
-  }
-
-  if (is.null(tbl$destination_plausible | is.na(tbl$destination_plausible))) {
-    tbl$destination_plausible <- 0
-  }
 
   ### Add fallbacks in case route data is inaccurate. API provides a 0/1 metric for plausibility.
   if (tbl$origin_plausible == 1) {
@@ -1311,8 +1295,28 @@ route_info <- bind_rows(
 united_10_positions <- left_join(united_10_positions, route_info) |>
   drop_na(callsign)
 
-united_10_gt <- united_10_positions |> as_tibble() |> drop_na(callsign)
+united_10_gt <- united_10_positions |>
+  as_tibble() |>
+  drop_na(origin_plausible, destination_plausible)
 ```
+
+:::{.callout}
+Hi. Future me here. So I'd like to save you some headache that I couldn't save myself from. See this image from GitHub actions?
+
+![](assets/failed_deployments.png)
+
+Yeah, that's all because of this:
+
+![](assets/failed_deployment_example.png)
+
+... which is connected to how I originally dealt with undetermined route information, which was just to try and coerce NA to 0 inside of the map table function. Turns out, ```if``` doesn't really like that approach, since trying to evaluate ```tbl$origin_plausible == 1``` when you have an ```NA``` doesn't actually resolve in a way that the computer can comprehend - does ```NA == 1```? I don't have any information about NA, so who knows? Well, time to throw an error! 
+
+Hence, this function when defining ```united_10_gt``` is pretty important to avoid serial failures related to that:
+```{r, eval=FALSE}
+drop_na(origin_plausible, destination_plausible)
+```
+
+:::
 
 ... we've finally arrived at the mapping function itself:
 

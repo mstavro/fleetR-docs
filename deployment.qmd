@@ -246,7 +246,15 @@ The best advice for troubleshooting is to check the logs by going to your repo, 
 
 ![](assets/failed_deployment_example.png)
 
-Here, ```tbl$destination_plausible``` is missing, likely because no aircraft were returned from our API functions. Similar errors include errors thrown by ```st_as_sf()``` about the absence of geometries and ```left_join()``` about a lack of columns to join, likely due to a missing table.
+Here, ```tbl$destination_plausible``` is missing, . 
+
+Other errors you might encounter include errors thrown by ```st_as_sf()``` about the absence of geometries and ```left_join()``` about a lack of columns to join, likely because no aircraft were returned from our API functions; an unlucky draw. Again, you can mitigate this by increasing the number of aircraft you pull.
+
+::: {.callout}
+Note that if you *do* increase the number of aircraft you want to pull, you'll likely need to add some cooldown time between your API requests, else you'll run into a rate limit of the OpenSky API. In our box analogy, the OpenSky team doesn't want you rolling up to their box, scooping up a bunch of stuff and then running off with it. It's almost Halloween as of the time of writing, and it wouldn't be very courteous of you to take the whole bowl of candy when there's a line of people taking only a few pieces at once. The same goes for our API access. 
+
+When you do get rate limited, you'll probably get a 429/503 response. ```req_perform()``` actually retries by default if it encounters this code, but you'll probably just get a 429 again if you've burned up too many requests in a time window. In that case, I'd recommend taking a look at ```req_throttle()``` and its [documentation](https://httr2.r-lib.org/reference/req_throttle.html).
+:::
 
 ### Updating Fleet Info
 The last piece is automatically refreshing the fleet info from Google Sheets. We'll use a separate actions `.yml` file for that called ```update_ua_fleet.yml```.
