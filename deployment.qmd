@@ -39,7 +39,7 @@ body .maplibregl-popup-content {
 }
 ```
 
-Additionally, you might want to use a ```_brand.yml``` file mimicking your airline of choice. Here's mine for United:
+Additionally, you might want to use a ```_brand.yml``` file. You could make a mock ```_brand.yml``` for your airline of choice, like United:
 
 ```
 meta:
@@ -58,6 +58,28 @@ logo:
 color:
   palette:
     blue: "#1414D2"
+  primary: blue
+  secondary: white
+```
+
+... or add your own airline-agnostic style, like I did for fleetR:
+
+```
+meta:
+  name: fleetR
+    
+logo: 
+  images:
+    fleetR-logo:
+      path: fleetR_white.png
+      alt: "fleetR Logo"
+  small: fleetR-logo
+  medium: fleetR-logo
+  large: fleetR-logo
+
+color:
+  palette:
+    blue: "#2323FF"
   primary: blue
   secondary: white
 ```
