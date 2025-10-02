@@ -1,0 +1,130 @@
+# Who Invited a Map to the Table Contest? {#sec-map-table}
+I did. Guilty as charged. It's time to actually make some tables!
+
+## The Map Table Function
+Spoiler: we're going to write a function that'll produce gt tables for each aircraft in our dataset. Why? Well, it has to do a little bit with how ```mapgl``` works.
+
+Sidebar that ```mapgl``` is a very cool package that brings Maplibre and Mapbox mapping capabilities to R, specifically for Quarto and Shiny apps. Maplibre and Mapbox provide functionality for tables that show up on-hover and on-click over geometric features. Maybe I haven't scoured the internet long enough, but, generally, when I see a table in a ```mapgl``` map, it looks something like this:
+
+![](assets/mapgl_table_example.png)
+
+Nothing wrong with this table. It just doesn't fully utilize the capabilities Maplibre has to offer. If we look at the reprex that the author of mapgl, Kyle Walker, provides for producing these pop-ups:
+
+```{r, eval=FALSE}
+fl_age$popup <- glue::glue(
+  "<strong>GEOID: </strong>{fl_age$GEOID}<br><strong>Median age: </strong>{fl_age$estimate}"
+)
+```
+
+Interesting... it's HTML. Wait. Aren't ```gt``` tables HTML? Sure are! Especially when we pass ```as_raw_html()``` after creating them. Turns out, ```mapgl``` does a great job at rendering these tables for use in maps!
+
+Back to the reason about why we're producing a function to make gt tables on a per-row basis. We're going to use this function, in combination with map and mutate, to contain the HTML needed to render the table in a column. We'll then call that column inside our Maplibre functions. Simple enough, hopefully.
+
+Alright, well it's probably easiest if we build an initial draft of the table first, then worry about the function part.
+
+First, let's get the data we actually want to map. We have fleet info, we have an aircraft's state vector (which includes the aircraft's present callsign), and we have a way to get the route information from a callsign. Let's join these tables up together using a series of left joins. We'll actually need to include the registration info in the data we derived from OpenSky, which only contains the icao24 address. Luckily, we have the ```get_registration_from_icao24()``` function for this purpose.
+
+```{r}
+library(tidyverse)
+library(sfarrow)
+library(gt)
+library(sf)
+library(httr2)
+library(glue)
+united_full_fleet_info <- read_csv("data/united_full_fleet_info.csv")
+
+### In the reprex/GitHub repo, I source these from a script, "support_functions.R"
+  get_registration_from_icao24 <- function(icao24, return_tibble = TRUE){
+    tryCatch({
+    registration <- request("https://api.adsbdb.com/v0/mode-s/") |>
+      req_url_path_append(icao24) |>
+      req_perform() |>
+      resp_body_json()
+  
+      if(return_tibble){
+        return(as_tibble(registration$response) |> rename(registration = value))
+      } else{
+        return(registration$response)
+      }
+      },
+    error = function(e){
+      log_error("{icao24} encountered error {e}")
+      return(NULL)
+    })
+    }
+
+    get_route_information <- function(callsign){
+  tryCatch({
+  json <- list(
+    planes = list(list(callsign = callsign, lat = 0, lng = 0))
+  )
+
+  route <- request("https://api.adsb.lol/api/0/routeset/") |>
+    req_body_json(json) |>
+    req_perform() |>
+    resp_body_json()
+
+  route <- route[[1]] |> as_tibble()
+  if(nrow(route) > 2){
+    stop("Callsign has multiple routes or a multi-leg route. Unable to determine routing.")
+  }
+  route_origin <- route[1,] |> unnest_wider(`_airports`, names_sep = "_") |> rename_all(~ glue("origin_{.x}"))
+  route_destination <- route[2,] |> unnest_wider(`_airports`, names_sep = "_") |> rename_all(~ glue("destination_{.x}"))
+
+  route <- bind_cols(route_origin, route_destination) |> rename_all(~ str_replace_all(.x, "__", "_")) |> mutate(callsign = callsign)
+
+return(route)  
+  },
+  error = function(e){
+    log_error("Error getting route info for {callsign} {e}")
+    route <- tibble(origin_airports_iata = NA, 
+      origin_airports_name = NA,
+      origin_airports_countryiso2 = NA,
+      origin_plausible = NA,
+      destination_airports_iata = NA, 
+      destination_airports_name = NA,
+      destination_airports_countryiso2 = NA,
+      destination_plausible = NA,)
+    return(route)
+  })
+}
+###
+
+united_10_positions <- st_read_parquet("data/state_vector.parquet") |> mutate(registration = map_chr(icao24, \(x) get_registration_from_icao24(x, return_tibble = F))) |> 
+    st_as_sf()
+```
+
+I've called a bunch of these objects ```united_10_*``` due to my original plan to pull 10 aircraft every 15 minutes (40 * 4 = 160 * 24 = 3840 API credits). We'll want to get the barometric altitude that we stored in the simple features coordinates back out into its own column so we can show that in a table, which we can do using ```st_coordinates(x)[,3]```.[^1]
+
+```{r}
+united_10_positions <- left_join(united_10_positions |> mutate(baro_altitude = st_coordinates(united_10_positions)[,3]), united_full_fleet_info) 
+route_info <- bind_rows(
+    map(united_10_positions |> drop_na(callsign) |> pull(callsign), \(x) get_route_information(x))
+)
+united_10_positions <- left_join(united_10_positions, route_info) |> drop_na(callsign)
+```
+
+gt doesn't really play well with sf geometries, so let's create an object with those removed:
+
+```{r}
+united_10_gt <- united_10_positions |> as_tibble() |> drop_na(callsign)
+```
+
+Let's take a peek at the schema real quick:
+
+```{r}
+united_10_gt
+```
+
+```{r}
+united_10_gt |>
+    gt() |> tab_header(title = html(glue("<b>{united_10_gt$callsign}</b><br>{web_image(united_10_gt$aircraftimg, height = '9em')}"))) |> tab_options(table.width = pct(100), container.width = pct(100)) |> tab_source_note("Information sourced from the OpenSky Network, adsb.lol, ADSB-DB, and the United Fleet Website's mainline fleet tracker. Information, especially route information, may be inaccurate, and is omitted from the table header when unreliable. Table design by Martin Stavro. Information displayed here, including the medium in which it is displayed, is not affiliated with nor endorsed by United Airlines and is presented here within the provisions of fair use.") |>
+    fmt_markdown() |>
+    tab_style(
+        list(cell_text(weight = 500, color = "#FFFFFF"), cell_fill(color = "#000000")),
+        list(cells_row_groups())
+      ) |>
+    tab_options(column_labels.hidden = TRUE)
+```
+
+[^1]: You might be wondering what the point of even putting it into the coordinates was in the first place. Originally, I thought I'd be able to map the z-offset, until I learned it's a Mapbox only feature, and Mapbox has its own API/cost requirements. So, for those of you using Mapbox, the option is still there with the ```z-offset``` argument.

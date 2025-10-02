@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.25">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Deploying via GitHub Actions – United Explorer Project Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./map_tables.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-7b89279ff1a6dce999919e0e67d4d9ec.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-2778ace39694e72d95bda470d4070c24.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./deployment.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
+      <a href="./index.html" class="sidebar-logo-link">
+      </a>
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">United Explorer Project Documentation</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Coming Up With a Project Idea</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_sources.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Finding Data in the Real World</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./get_data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Actually Getting Flight Data (feat. httr2)</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./map_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./deployment.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#putting-into-quarto-and-styling" id="toc-putting-into-quarto-and-styling" class="nav-link active" data-scroll-target="#putting-into-quarto-and-styling"><span class="header-section-number">5.1</span> Putting into Quarto and Styling</a></li>
+  <li><a href="#sec-deployment" id="toc-sec-deployment" class="nav-link" data-scroll-target="#sec-deployment"><span class="header-section-number">5.2</span> Setting up GitHub Pages and GitHub Actions</a>
+  <ul class="collapse">
+  <li><a href="#github-pages" id="toc-github-pages" class="nav-link" data-scroll-target="#github-pages"><span class="header-section-number">5.2.1</span> GitHub Pages</a></li>
+  <li><a href="#updating-fleet-info" id="toc-updating-fleet-info" class="nav-link" data-scroll-target="#updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>We’re at the last part. We laugh, we cried, we made some friends along the way - okay, we didn’t do any of that. We did make a lot of tables, though. Now all that’s left is sharing them with the world.</p>
+<section id="putting-into-quarto-and-styling" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="putting-into-quarto-and-styling"><span class="header-section-number">5.1</span> Putting into Quarto and Styling</h2>
+<p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 4.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
+<p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 4.1</span></a>, but here’s the full SCSS you might want to have:</p>
+<pre><code>$navbar-bg: black;
+$navbar-fg: white;
+
+/*-- scss:rules --*/
+// CSS rules for styling go here
+// Scale pop-up for different displays
+body .maplibregl-popup {
+    max-width: 80vw !important; // Default for mobile and small screens (&lt;901px)
+    max-height: 70vh !important;
+    z-index: 1200;
+}
+
+// Rule for displays between 901px and 1351px
+@media screen and (min-width: 901px) and (max-width: 1351px) {
+    body .maplibregl-popup {
+        max-width: 60vw !important; // Larger on "tablet" and medium desktop displays
+    }
+}
+
+// Rule for large displays (&gt;1351px)
+@media screen and (min-width: 1352px) {
+    body .maplibregl-popup {
+        max-width: 40vw !important; // Smaller on large desktop displays
+    }
+}
+
+body .maplibregl-popup-content {
+    overflow-x: auto !important;
+    overflow-y: auto !important;
+}</code></pre>
+<p>Additionally, you might want to use a <code>_brand.yml</code> file mimicking your airline of choice. Here’s mine for United:</p>
+<pre><code>meta:
+  name: United Airlines
+  link: https://www.united.com
+    
+logo: 
+  images:
+    united-logo:
+      path: "https://www.united.com/2500e4e62233fbfe8ac6.unitedLogoNew.svg"
+      alt: "United Airlines"
+  small: united-logo
+  medium: united-logo
+  large: united-logo
+
+color:
+  palette:
+    blue: "#1414D2"
+  primary: blue
+  secondary: white</code></pre>
+<p>Finally, you’re probably going to want a <code>_quarto.yml</code> file for your project. I’ll get to that below.</p>
+</section>
+<section id="sec-deployment" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="sec-deployment"><span class="header-section-number">5.2</span> Setting up GitHub Pages and GitHub Actions</h2>
+<p>I guess it’s worth talking about the strategies of deployment quickly. Side note that Hadley Wickham has a <a href="https://r-in-production.org/">book-in-progress on this</a> and you should probably read it, because what I’m about to give you is the cliff-notes version of a workshop based on said book.</p>
+<p>Basically, the first step we should think about when we think through deployment is longevity - i.e., managing package versions. We’ve got three options for this:</p>
+<ol type="1">
+<li>YOLO: just send it up on GitHub or Posit Connect or whatever with whatever pak pulls</li>
+<li>Pack and ship: use rsconnect::manifest(), which works really well with Posit tools and is really elegant and frankly a really good plug for Posit solutions.</li>
+<li>Freeze it: use renv to lock everything.</li>
+</ol>
+<p>We’re going to use YOLO, because in the workshop it had a cool picture of a guy hang gliding but also because the packages we use are stable enough for present purposes. Moreover, we are also constantly building our app, and pak/GitHub will package lock our builds at the time of compilation. Moreover moreover, it fits with our current approach of using CDNs and connections to online resources whenever we can. I don’t recommend this necessarily if you want an app that you’re sure won’t suffer from a breaking change. The converse of that is your app won’t benefit from improvements/new functionality introduced into packages that take effect natively. So your mileage will vary here.</p>
+<p>To continuously integrate and deploy (CI/CD!) our app, we’re going to need a few things:</p>
+<ul>
+<li>GitHub Pages</li>
+<li>A GitHub action to render and deploy our index.qmd to pages</li>
+<li>A GitHub action to pull the United fleet Google Sheet every so often in case United takes new deliveries (or some planes go inactive)</li>
+</ul>
+<section id="github-pages" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="github-pages"><span class="header-section-number">5.2.1</span> GitHub Pages</h3>
+<p>I’m assuming you have GitHub initialized. If you don’t, start with this in the console while in your project directory:</p>
+<p><code>usethis::use_github()</code></p>
+<p>Before you go any further, remember when we introduced some secrets in <a href="get_data.html#sec-opensky" class="quarto-xref"><span>Section 3.1.3</span></a>? Yeah, we’re probably going to want to tell GitHub about those. It’s okay, I don’t think GitHub is interested in telling everyone your secrets.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Navigate to your repository, then go to “Settings”, and go to “Secrets and Variables.” You’re going to want to add two repository secrets, one called OPENSKY_CLIENT_ID and the other OPENSKY_CLIENT_SECRET, corresponding to your ID and SECRET in your credentials.json/.Renviron from earlier.</p>
+<p><img src="assets/repo_secrets.png" class="img-fluid"></p>
+<div class="callout callout-style-simple callout-none no-icon">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-body-container">
+<p>Reminder that if you change your secret for whatever reason, change it in the repo. Else you’ll be stuck frustrated for at least 2-3 hours like me wondering why your deployment isn’t working, only to remember that you rotated your secret.</p>
+</div>
+</div>
+</div>
+<p><strong>And before you go any further again, you’re going to likely want a <code>_quarto.yml</code> file for your project, even if it’s just a standalone page/dashboard.</strong> You don’t <em>need</em> this; you’re able to deploy individual sites without a <code>_quarto.yml file.</code> Speaking from experience, though, the <code>_quarto.yml</code> file makes your life a bit easier because it enables you to use the Quarto publish workflow:</p>
+<pre><code>      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<p>If you’re not sure how to set up a <code>_quarto.yaml</code>, in this case it can be as simple as this:</p>
+<pre><code>project:
+  type: website 
+
+website:
+  title: "Posit Table Contest"
+  favicon: https://www.united.com/2500e4e62233fbfe8ac6.unitedLogoNew.svg</code></pre>
+<p>You can then set up pages:</p>
+<p><code>usethis::use_github_pages()</code></p>
+<p>… and run this command in the terminal:</p>
+<pre><code>quarto publish gh-pages</code></pre>
+<p>Your Quarto doc will render for its initial deployment to pages. If you’re overly eager like me, you might’ve changed your “Pages” setting to “Deploy from GitHub Actions” - <strong>change it back</strong> to “Deploy from a branch” if that’s the case, and make sure it’s deploying from “gh-pages” (unless you changed the defaults set by <code>use_github_pages()</code>).</p>
+<p>After the initial render, you should have your first deployment! Hooray! But how do we get it to continuously deploy? Enter GitHub actions.</p>
+<p>I’ve set up an action file called <code>render.yml</code>, which looks something like this:</p>
+<pre><code>name: Pull flights, render, and publish
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Install quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+          
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<p>And the anatomy of this action is as such:</p>
+<pre><code>name: Pull flights, render, and publish
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'
+permissions:
+  contents: write</code></pre>
+<p><code>name:</code> a name for the action that shows up in GitHub</p>
+<p><code>on:</code> creates the conditions under which the action runs: - The workflow activates every 30 minutes (you can use <a href="crontab.guru">crontab.guru</a> for help writing cron jobs) - The workflow activates on a workflow dispatch button which appears in GitHub under the “Actions” section of your repository - Gives the action write permissions, which allows it to write the changes to GitHub pages</p>
+<pre><code>jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Install quarto
+      - uses: quarto-dev/quarto-actions/setup@v2
+          
+      - name: Render and Publish
+        uses: quarto-dev/quarto-actions/publish@v2
+        with:
+          target: gh-pages
+        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<p><code>jobs:</code> actually specifies what’s going to take place: - The “runner”, aka, the Microsoft Azure Ubuntu Linux container running the job, will grab your repo and start working on it - The runner will install R - The runner will then set up dependencies (packages) based on what it detects in your scripts - The runner will set up Quarto - Finally, the runner will render your Quarto document, and publish to GitHub pages, because you have specified:</p>
+<pre><code>        with:
+          target: gh-pages</code></pre>
+<p>Additionally, your runner will actually be able to render your document because you’ve supplied:</p>
+<pre><code>        env:
+          OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
+          OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
+<section id="troubleshooting" class="level4" data-number="5.2.1.1">
+<h4 data-number="5.2.1.1" class="anchored" data-anchor-id="troubleshooting"><span class="header-section-number">5.2.1.1</span> Troubleshooting</h4>
+<p>Chances are, you’re going to run into some obstacles. I hope that providing you with the .yml will mitigate this somewhat, but here’s some general notes about failed deployments using this code:</p>
+<ul>
+<li>Some failed deployments are normal. The solution proposed in <a href="data_sources.html#sec-tolled-boxes" class="quarto-xref"><span>Section 2.1.1</span></a> relies, partly, on chance, in the sense that you’ll actually pull live aircraft. You may very well pull a segment of aircraft that are all sitting on the ground in a given moment. In this case, the Quarto script fails on purpose because there’s nothing to visualize. And it’s entirely possible that you could have long stints where you pull nothing, just because you’re pulling the wrong aircraft on the network. The best solution here is just to take a larger cross section of aircraft, perhaps trading off on the refresh period (i.e., 30/40 aircraft every hour, on the hour).</li>
+<li>You rotated your credentials and forgot to update them (me).</li>
+<li>You haven’t successfully rendered the Quarto page at least once locally with <code>usethis::use_gh_pages()</code></li>
+</ul>
+<p>The best advice for troubleshooting is to check the logs by going to your repo, going to “Actions,” and clicking on a failed deployment. Here’s an example:</p>
+<p><img src="assets/failed_deployment_example.png" class="img-fluid"></p>
+<p>Here, <code>tbl$destination_plausible</code> is missing, likely because no aircraft were returned from our API functions. Similar errors include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely due to a missing table.</p>
+</section>
+</section>
+<section id="updating-fleet-info" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="updating-fleet-info"><span class="header-section-number">5.2.2</span> Updating Fleet Info</h3>
+<p>The last piece is automatically refreshing the fleet info from Google Sheets. We’ll use a separate actions <code>.yml</code> file for that called <code>update_ua_fleet.yml</code>.</p>
+<pre><code>name: Check for changes to the United mainline fleet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 12 * * *'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Execute the script
+      - name: Query changes to United fleet and update active registrations
+        run: Rscript rebuild_fleet_info.R
+
+      # Commit changes to csv back to the repo
+      - uses: stefanzweifel/git-auto-commit-action@v5</code></pre>
+<p>Let’s walk through this one like the last:</p>
+<pre><code>name: Check for changes to the United mainline fleet
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '5 12 * * *'
+
+permissions:
+  contents: write</code></pre>
+<p><code>name:</code> sets the name we see in GitHub for this action.</p>
+<p><code>on:</code> does the following:</p>
+<ul>
+<li>lets us trigger the action using the workflow dispatch button in actions</li>
+<li>runs this job at 12:05 UTC daily</li>
+</ul>
+<p><code>permissions:</code> enables the runner to write; specifically, it’ll write <code>"data/united_full_fleet_info.csv"</code> and <code>""data/compatible_registrations.csv""</code></p>
+<pre><code>jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout this repo
+      - uses: actions/checkout@v4
+
+      # Install R
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+
+      # Install R packages from files/DESCRIPTION
+      - uses: r-lib/actions/setup-r-dependencies@v2
+
+      # Execute the script
+      - name: Query changes to United fleet and update active registrations
+        run: Rscript rebuild_fleet_info.R
+
+      # Commit changes to csv back to the repo
+      - uses: stefanzweifel/git-auto-commit-action@v5</code></pre>
+<p><code>jobs:</code> everything’s the same here with the exception of the last two:</p>
+<ul>
+<li><code>run: Rscript rebuild_fleet_info.R</code> will run our R script</li>
+<li><code>uses: stefanzweifel/git-auto-commit-action@v5</code> will commit the changes the runner makes, i.e., writing the updated CSVs, to the repo</li>
+</ul>
+<p>… and that should be all you need to know on the deployment side! You can create these actions by going to the Actions tab under your repo.</p>
+
+
+</section>
+</section>
+<section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes">
+<hr>
+<ol>
+<li id="fn1"><p>In fact, there are some limited things GitHub does to prevent you from accidentally leaking a secret, but if you’re really determined, then GitHub’s not going to be able to stop you.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./map_tables.html" class="pagination-link" aria-label="Who Invited a Map to the Table Contest?">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Who Invited a Map to the Table Contest?</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
