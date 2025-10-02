@@ -183,6 +183,7 @@ permissions:
 ```name:``` a name for the action that shows up in GitHub
 
 ```on:``` creates the conditions under which the action runs:
+
 - The workflow activates every 30 minutes (you can use [crontab.guru](crontab.guru) for help writing cron jobs)
 - The workflow activates on a workflow dispatch button which appears in GitHub under the "Actions" section of your repository
 - Gives the action write permissions, which allows it to write the changes to GitHub pages
@@ -216,6 +217,7 @@ jobs:
 ```
 
 ```jobs:``` actually specifies what's going to take place:
+
 - The "runner", aka, the Microsoft Azure Ubuntu Linux container running the job, will grab your repo and start working on it
 - The runner will install R
 - The runner will then set up dependencies (packages) based on what it detects in your scripts
@@ -246,7 +248,7 @@ The best advice for troubleshooting is to check the logs by going to your repo, 
 
 ![](assets/failed_deployment_example.png)
 
-Here, ```tbl$destination_plausible``` is missing, . 
+Here, ```tbl$destination_plausible``` is missing. See the callout notes in @sec-opensky and @sec-map-table for more information about that.
 
 Other errors you might encounter include errors thrown by ```st_as_sf()``` about the absence of geometries and ```left_join()``` about a lack of columns to join, likely because no aircraft were returned from our API functions; an unlucky draw. Again, you can mitigate this by increasing the number of aircraft you pull.
 
@@ -314,7 +316,7 @@ permissions:
 - lets us trigger the action using the workflow dispatch button in actions
 - runs this job at 12:05 UTC daily
 
-```permissions:``` enables the runner to write; specifically, it'll write ```"data/united_full_fleet_info.csv"``` and ```""data/compatible_registrations.csv""```
+```permissions:``` enables the runner to write; specifically, it'll write ```"data/united_full_fleet_info.csv"``` and ```"data/compatible_registrations.csv"```
 
 ```
 jobs:
