@@ -2,9 +2,9 @@
   {
     "objectID": "index.html",
     "href": "index.html",
-    "title": "United Explorer Project Documentation",
+    "title": "fleetR: Airline Fleet Explorer Documentation",
     "section": "",
-    "text": "Preface\nThis book documents my entry for Posit’s 2025 Table Contest, the Unofficial United Mainline Fleet Tracker.",
+    "text": "Preface\nThis book documents my entry for Posit’s 2025 Table Contest, *fleetR: Airline Fleet Explorer.",
     "crumbs": [
       "Preface"
     ]
@@ -12,7 +12,7 @@
   {
     "objectID": "index.html#footnotes",
     "href": "index.html#footnotes",
-    "title": "United Explorer Project Documentation",
+    "title": "fleetR: Airline Fleet Explorer Documentation",
     "section": "",
     "text": "I blame my decision to pick up a philosophy major for this perspective.↩︎\nIf I may be so bold to call it that.↩︎",
     "crumbs": [
@@ -24,7 +24,7 @@
     "href": "intro.html",
     "title": "1  Coming Up With a Project Idea",
     "section": "",
-    "text": "1.1 Why Track the United Fleet?\nSo, if you’re like me, you’ll see this table project and think to yourself:\nGreat question. And it was the same question I asked myself up until about a week before the project deadline. Very confidence inspiring, I know.\nI think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you’re likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.1\nI’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I’ve flown United recently, so I guess there’s some recency bias at play.\nWeb development for R also is an area of interest for me. I’m really impressed at how far the ecosystem stretches with Quarto and Shiny. What’s more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It’s kind of like snapping Lego bricks together.2 Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we’re about to find out!\nFinally, I had the pleasure of attending the R in Production workshop at posit::conf(2025) which taught me a lot of cool things about, you guessed it, putting R in production. Neat things with GitHub Actions and moving away from the point and click approach of programming with R. This seems like a prime opportunity to put what I learned into practice!3",
+    "text": "1.1 Why Track an Airline Fleet?\nSo, if you’re like me, you’ll see this table project and think to yourself:\nGreat question. And it was the same question I asked myself up until about a week before the project deadline. Very confidence inspiring, I know.\nI think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you’re likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.1\nI’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I’ve flown United recently, so I guess there’s some recency bias at play as to why I chose United as the airline used in this entry. Hopefully after reading through the documentation, especially Section 4.1 and Section 4.2, you’ll find that this project is extensible, in the sense that you can replicate my steps to substitute United for an airline (or airlines!) of your choosing.\nWeb development for R also is an area of interest for me. I’m really impressed at how far the ecosystem stretches with Quarto and Shiny. What’s more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It’s kind of like snapping Lego bricks together.2 Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we’re about to find out!\nFinally, I had the pleasure of attending the R in Production workshop at posit::conf(2025) which taught me a lot of cool things about, you guessed it, putting R in production. Neat things with GitHub Actions and moving away from the point and click approach of programming with R. This seems like a prime opportunity to put what I learned into practice!3",
     "crumbs": [
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Coming Up With a Project Idea</span>"
     ]
@@ -130,11 +130,11 @@
     ]
   },
   {
-    "objectID": "fleet_data.html#customizing-the-fleet-tracker-to-another-airline",
-    "href": "fleet_data.html#customizing-the-fleet-tracker-to-another-airline",
+    "objectID": "fleet_data.html#sec-custom-fleet",
+    "href": "fleet_data.html#sec-custom-fleet",
     "title": "4  Actually Getting Fleet Data (feat. googlesheets4)",
     "section": "4.2 Customizing the Fleet Tracker to Another Airline",
-    "text": "4.2 Customizing the Fleet Tracker to Another Airline\nIt’s worth adding a quick note that if you want to take this project and run with another airline, this is the major piece you’ll need to change out in order to do so. Chapter 3 will work universally for whatever airline you choose, but you’ll need a list of icao24 addresses to pass through these functions. Apart from getting different icao24 addresses, you’ll probably want a table with information on the fleet similar to what’s been presented in this section - at least the aircraft models and links to visuals you’d like to include. If you change the schema, you’ll probably need to change some of the table code, covered in the next chapter.",
+    "text": "4.2 Customizing the Fleet Tracker to Another Airline\nIt’s worth adding a quick note that if you want to take this project and run with another airline, this is the major piece you’ll need to change out in order to do so. Chapter 3 will work universally for whatever airline you choose, but you’ll need a list of icao24 addresses to pass through these functions. Apart from getting different icao24 addresses, you’ll probably want a table with information on the fleet similar to what’s been presented in this section - at least the aircraft models and links to visuals you’d like to include. If you change the schema, you’ll probably need to change some of the table code, covered in the next chapter.\nFor example, you could substitute that United Google Sheet with this Delta Google Sheet or this Lufthansa Google Sheet - though you’d need to embark on some separate data cleaning steps. You’ll also need to likely rename variables and column selectors used throughout the table functions in this book (or you could leave the objects with the united_* naming schema, it doesn’t make a difference to R). Hopefully this section gave you a good feel of what your data should roughly look like, though, so that you have an idea of the end state when cleaning other fleet datasets for use.",
     "crumbs": [
       "<span class='chapter-number'>4</span>  <span class='chapter-title'>Actually Getting Fleet Data (feat. googlesheets4)</span>"
     ]
@@ -227,6 +227,16 @@
     "text": "In fact, there are some limited things GitHub does to prevent you from accidentally leaking a secret, but if you’re really determined, then GitHub’s not going to be able to stop you.↩︎",
     "crumbs": [
       "<span class='chapter-number'>6</span>  <span class='chapter-title'>Deploying via GitHub Actions</span>"
+    ]
+  },
+  {
+    "objectID": "conclusion.html",
+    "href": "conclusion.html",
+    "title": "7  Conclusion and Next Steps",
+    "section": "",
+    "text": "I hope this book’s been somewhat insightful and that it was somewhat enjoyable to read. I had a lot of fun putting this project together, and I hope that whoever reads it gets some value out of it. I think it’s always good to close with some thoughts on next steps and room for improvement:\n\nSome of these functions would be cool to wrap in a package, or contribute to an existing package. I’ve come across the openSkies and the anyflights package. openSkies is fairly similar, though not exactly the same, so I do wonder whether some combination of these tables, maps, and API wrappers would be useful. TBD. fleetR already seems like a good name…\nThe geometries are still a little problematic, especially when crossing the date line as an aircraft may not necessarily generate ADS-B pings for a long period of time, which still seems to confuse sf even with the inclusion of st_wrap_dateline().\nMore fleets, could, of course, be added. Lufthansa seems like a fun extension. Though the issue of the credit limit remains…\nThe credit limit and being able to only select a subsection of the aircraft is a trade-off I’m not wholly satisfied with, but I think that’s the limit of using open-source options. Presumably you’d be able to do a lot more with a paid API endpoint from a major service provider. I’m satisfied that this is still a proper proof of concept that can be scaled.\n\nIf you’ve made it this far, thank you for reading! That’s all of my thoughts for the time being. Go enjoy other parts of the world (or some more of my writing, whatever you prefer).",
+    "crumbs": [
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Conclusion and Next Steps</span>"
     ]
   }
 ]

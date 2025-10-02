@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>1&nbsp; Coming Up With a Project Idea – United Explorer Project Documentation</title>
+<title>1&nbsp; Coming Up With a Project Idea – fleetR: Airline Fleet Explorer Documentation</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -135,7 +135,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <a href="./index.html" class="sidebar-logo-link">
       </a>
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">United Explorer Project Documentation</a> 
+      <a href="./">fleetR: Airline Fleet Explorer Documentation</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -187,6 +187,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Deploying via GitHub Actions</span></span></a>
   </div>
 </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./conclusion.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Conclusion and Next Steps</span></span></a>
+  </div>
+</li>
     </ul>
     </div>
 </nav>
@@ -197,7 +203,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#why-track-the-united-fleet" id="toc-why-track-the-united-fleet" class="nav-link active" data-scroll-target="#why-track-the-united-fleet"><span class="header-section-number">1.1</span> Why Track the United Fleet?</a></li>
+  <li><a href="#why-track-an-airline-fleet" id="toc-why-track-an-airline-fleet" class="nav-link active" data-scroll-target="#why-track-an-airline-fleet"><span class="header-section-number">1.1</span> Why Track an Airline Fleet?</a></li>
   <li><a href="#packages-youll-need" id="toc-packages-youll-need" class="nav-link" data-scroll-target="#packages-youll-need"><span class="header-section-number">1.2</span> Packages You’ll Need</a></li>
   </ul>
 </nav>
@@ -230,9 +236,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </blockquote>
 <p>Great question. And it was the same question I asked myself up until about a week before the project deadline. Very confidence inspiring, I know.</p>
 <p>I think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you’re likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
-<section id="why-track-the-united-fleet" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="why-track-the-united-fleet"><span class="header-section-number">1.1</span> Why Track the United Fleet?</h2>
-<p>I’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I’ve flown United recently, so I guess there’s some recency bias at play.</p>
+<section id="why-track-an-airline-fleet" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="why-track-an-airline-fleet"><span class="header-section-number">1.1</span> Why Track an Airline Fleet?</h2>
+<p>I’m an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There’s probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I’ve flown United recently, so I guess there’s some recency bias at play as to why I chose United as the airline used in this entry. Hopefully after reading through the documentation, especially <a href="fleet_data.html#sec-fleet" class="quarto-xref"><span>Section 4.1</span></a> and <a href="fleet_data.html#sec-custom-fleet" class="quarto-xref"><span>Section 4.2</span></a>, you’ll find that this project is extensible, in the sense that you can replicate my steps to substitute United for an airline (or airlines!) of your choosing.</p>
 <p>Web development for R also is an area of interest for me. I’m really impressed at how far the ecosystem stretches with Quarto and Shiny. What’s more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It’s kind of like snapping Lego bricks together.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we’re about to find out!</p>
 <p>Finally, I had the pleasure of attending the R in Production workshop at posit::conf(2025) which taught me a lot of cool things about, you guessed it, putting R in production. Neat things with GitHub Actions and moving away from the point and click approach of programming with R. This seems like a prime opportunity to put what I learned into practice!<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a></p>
 </section>
