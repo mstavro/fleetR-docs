@@ -101,6 +101,9 @@ ul.task-list li input[type="checkbox"] {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">fleetR: Airline Fleet Explorer Documentation</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/mstavro/fleetR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -234,7 +237,7 @@ body .maplibregl-popup-content {
     overflow-x: auto !important;
     overflow-y: auto !important;
 }</code></pre>
-<p>Additionally, you might want to use a <code>_brand.yml</code> file mimicking your airline of choice. Here’s mine for United:</p>
+<p>Additionally, you might want to use a <code>_brand.yml</code> file. You could make a mock <code>_brand.yml</code> for your airline of choice, like United:</p>
 <pre><code>meta:
   name: United Airlines
   link: https://www.united.com
@@ -251,6 +254,24 @@ logo:
 color:
   palette:
     blue: "#1414D2"
+  primary: blue
+  secondary: white</code></pre>
+<p>… or add your own airline-agnostic style, like I did for fleetR:</p>
+<pre><code>meta:
+  name: fleetR
+    
+logo: 
+  images:
+    fleetR-logo:
+      path: fleetR_white.png
+      alt: "fleetR Logo"
+  small: fleetR-logo
+  medium: fleetR-logo
+  large: fleetR-logo
+
+color:
+  palette:
+    blue: "#2323FF"
   primary: blue
   secondary: white</code></pre>
 <p>Finally, you’re probably going to want a <code>_quarto.yml</code> file for your project. I’ll get to that below.</p>

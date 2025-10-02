@@ -100,6 +100,9 @@ ul.task-list li input[type="checkbox"] {
       </a>
     <div class="sidebar-title mb-0 py-0">
       <a href="./">fleetR: Airline Fleet Explorer Documentation</a> 
+        <div class="sidebar-tools-main">
+    <a href="https://github.com/mstavro/fleetR" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+</div>
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -192,7 +195,7 @@ ul.task-list li input[type="checkbox"] {
 <li>Some of these functions would be cool to wrap in a package, or contribute to an existing package. I’ve come across the <code>openSkies</code> and the <code>anyflights</code> package. <code>openSkies</code> is fairly similar, though not exactly the same, so I do wonder whether some combination of these tables, maps, and API wrappers would be useful. TBD. <code>fleetR</code> already seems like a good name…</li>
 <li>The geometries are still a little problematic, especially when crossing the date line as an aircraft may not necessarily generate ADS-B pings for a long period of time, which still seems to confuse <code>sf</code> even with the inclusion of <code>st_wrap_dateline()</code>.</li>
 <li>More fleets, could, of course, be added. Lufthansa seems like a fun extension. Though the issue of the credit limit remains…</li>
-<li>The credit limit and being able to only select a subsection of the aircraft is a trade-off I’m not wholly satisfied with, but I think that’s the limit of using open-source options. Presumably you’d be able to do a lot more with a paid API endpoint from a major service provider. I’m satisfied that this is still a proper proof of concept that can be scaled.</li>
+<li>I would’ve loved to be able to select more aircraft or give the user more prerogative over which aircraft they see on the map, but ultimately I think that’s the limit of using open-source options. Presumably you’d be able to do a lot more with a paid API endpoint from a major service provider. I am satisfied, however, that this is still a proper approach that can be scaled with a hookup to one of those APIs.</li>
 </ul>
 <p>If you’ve made it this far, thank you for reading! That’s all of my thoughts for the time being. Go enjoy other parts of the world (or some more of my writing, whatever you prefer).</p>
 
