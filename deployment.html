@@ -343,7 +343,12 @@ on:
 permissions:
   contents: write</code></pre>
 <p><code>name:</code> a name for the action that shows up in GitHub</p>
-<p><code>on:</code> creates the conditions under which the action runs: - The workflow activates every 30 minutes (you can use <a href="crontab.guru">crontab.guru</a> for help writing cron jobs) - The workflow activates on a workflow dispatch button which appears in GitHub under the “Actions” section of your repository - Gives the action write permissions, which allows it to write the changes to GitHub pages</p>
+<p><code>on:</code> creates the conditions under which the action runs:</p>
+<ul>
+<li>The workflow activates every 30 minutes (you can use <a href="crontab.guru">crontab.guru</a> for help writing cron jobs)</li>
+<li>The workflow activates on a workflow dispatch button which appears in GitHub under the “Actions” section of your repository</li>
+<li>Gives the action write permissions, which allows it to write the changes to GitHub pages</li>
+</ul>
 <pre><code>jobs:
   render:
     runs-on: ubuntu-latest
@@ -369,7 +374,14 @@ permissions:
         env:
           OPENSKY_CLIENT_ID: ${{ secrets.OPENSKY_CLIENT_ID }}
           OPENSKY_CLIENT_SECRET: ${{ secrets.OPENSKY_CLIENT_SECRET }}</code></pre>
-<p><code>jobs:</code> actually specifies what’s going to take place: - The “runner”, aka, the Microsoft Azure Ubuntu Linux container running the job, will grab your repo and start working on it - The runner will install R - The runner will then set up dependencies (packages) based on what it detects in your scripts - The runner will set up Quarto - Finally, the runner will render your Quarto document, and publish to GitHub pages, because you have specified:</p>
+<p><code>jobs:</code> actually specifies what’s going to take place:</p>
+<ul>
+<li>The “runner”, aka, the Microsoft Azure Ubuntu Linux container running the job, will grab your repo and start working on it</li>
+<li>The runner will install R</li>
+<li>The runner will then set up dependencies (packages) based on what it detects in your scripts</li>
+<li>The runner will set up Quarto</li>
+<li>Finally, the runner will render your Quarto document, and publish to GitHub pages, because you have specified:</li>
+</ul>
 <pre><code>        with:
           target: gh-pages</code></pre>
 <p>Additionally, your runner will actually be able to render your document because you’ve supplied:</p>
@@ -386,7 +398,7 @@ permissions:
 </ul>
 <p>The best advice for troubleshooting is to check the logs by going to your repo, going to “Actions,” and clicking on a failed deployment. Here’s an example:</p>
 <p><img src="assets/failed_deployment_example.png" class="img-fluid"></p>
-<p>Here, <code>tbl$destination_plausible</code> is missing, .</p>
+<p>Here, <code>tbl$destination_plausible</code> is missing. See the callout notes in <a href="get_data.html#sec-opensky" class="quarto-xref"><span>Section 3.1.3</span></a> and <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a> for more information about that.</p>
 <p>Other errors you might encounter include errors thrown by <code>st_as_sf()</code> about the absence of geometries and <code>left_join()</code> about a lack of columns to join, likely because no aircraft were returned from our API functions; an unlucky draw. Again, you can mitigate this by increasing the number of aircraft you pull.</p>
 <div class="callout callout-style-simple callout-none no-icon">
 <div class="callout-body d-flex">
@@ -451,7 +463,7 @@ permissions:
 <li>lets us trigger the action using the workflow dispatch button in actions</li>
 <li>runs this job at 12:05 UTC daily</li>
 </ul>
-<p><code>permissions:</code> enables the runner to write; specifically, it’ll write <code>"data/united_full_fleet_info.csv"</code> and <code>""data/compatible_registrations.csv""</code></p>
+<p><code>permissions:</code> enables the runner to write; specifically, it’ll write <code>"data/united_full_fleet_info.csv"</code> and <code>"data/compatible_registrations.csv"</code></p>
 <pre><code>jobs:
   render:
     runs-on: ubuntu-latest
