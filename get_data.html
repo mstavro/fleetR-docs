@@ -1064,7 +1064,7 @@ lgl (1): path_6
 </div>
 </div>
 </div>
-<p>Okay, let’s do the same thing for state vectors. A lot of this is going to be similar so I’m going to move substantially quicker through this one. The base URL this time is <code>https://opensky-network.org/api/states/all?</code>, the arguments we need to pass (icao24) are the same, and we’ve got a whole bunch more return values. Spoiler: we’ll need to unnest, rename, coerce Unix values, and convert to simple features like last time. What’s different this time is that we’ve got a <code>callsign</code> column with some whitespace in it. We’ll deal with the whitespace using <code>mutate(callsign = trimws(callsign))</code> to get rid of it. We’ll call this function <code>get_state_vector</code>.</p>
+<p>Okay, let’s do the same thing for state vectors. A lot of this is going to be similar so I’m going to move substantially quicker through this one. The base URL this time is <code>https://opensky-network.org/api/states/all?</code>, the arguments we need to pass (icao24) are the same, and we’ve got a whole bunch more return values. Spoiler: we’ll need to unnest, rename, coerce Unix values, and convert to simple features like last time.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a> What’s different this time is that we’ve got a <code>callsign</code> column with some whitespace in it. We’ll deal with the whitespace using <code>mutate(callsign = trimws(callsign))</code> to get rid of it. We’ll call this function <code>get_state_vector</code>.</p>
 <p><img src="assets/opensky_states.png" class="img-fluid"></p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>get_state_vector <span class="ot">&lt;-</span> <span class="cf">function</span>(icao24, <span class="at">as_sf =</span> <span class="cn">TRUE</span>) {</span>
@@ -1340,6 +1340,7 @@ OPENSKY_CLIENT_SECRET="imnotputtingarealsecretinhereasanexamplewejustmetmaybeget
 <hr>
 <ol>
 <li id="fn1"><p>I imagine there’s an opportunity for a self-deprecating joke here. I don’t want to write it out and you’re probably clever enough to infer it considering I’m more content sitting in front of my computer typing this than actually going outside.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>You might notice there’s a disparity between the screenshot and the code below, namely that there’s no rename pair for index 17 (category). This API call doesn’t seem to return category data, at least not in a way that gets captured when unnesting wider.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
 </ol>
 </section>
 
