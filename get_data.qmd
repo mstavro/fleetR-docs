@@ -687,7 +687,9 @@ If the function doesn't return any data, it could very well be the case that the
 The way I've handled the errors here is anticipation of using ```map()``` on this function, and this isn't the only way, or maybe even the best way, to achieve this goal. One could use ```possibly()``` or ```safely()``` as alternatives which will move past errors when applying this function against a vector. But, for present purposes, this is what I've went with.
 :::
 
-Okay, let's do the same thing for state vectors. A lot of this is going to be similar so I'm going to move substantially quicker through this one. The base URL this time is ```https://opensky-network.org/api/states/all?```, the arguments we need to pass (icao24) are the same, and we've got a whole bunch more return values. Spoiler: we'll need to unnest, rename, coerce Unix values, and convert to simple features like last time. What's different this time is that we've got a ```callsign``` column with some whitespace in it. We'll deal with the whitespace using ```mutate(callsign = trimws(callsign))``` to get rid of it. We'll call this function ```get_state_vector```.
+Okay, let's do the same thing for state vectors. A lot of this is going to be similar so I'm going to move substantially quicker through this one. The base URL this time is ```https://opensky-network.org/api/states/all?```, the arguments we need to pass (icao24) are the same, and we've got a whole bunch more return values. Spoiler: we'll need to unnest, rename, coerce Unix values, and convert to simple features like last time.[^2] What's different this time is that we've got a ```callsign``` column with some whitespace in it. We'll deal with the whitespace using ```mutate(callsign = trimws(callsign))``` to get rid of it. We'll call this function ```get_state_vector```.
+
+[^2]: You might notice there's a disparity between the screenshot and the code below, namely that there's no rename pair for index 17 (category). This API call doesn't seem to return category data, at least not in a way that gets captured when unnesting wider.
 
 ![](assets/opensky_states.png)
 
