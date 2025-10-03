@@ -185,6 +185,67 @@ get_registration_from_icao24 <- function(icao24, return_tibble = TRUE) {
 
 I'm storing these functions in a file called ```support_functions.R``` which I'll call later in my other scripts, just to keep them in a separate, single source of truth.
 
+::: {.callout-important}
+Hi reader. Future me here. Turns out I neglected to mention something important on the first go around. ADSBDB's API actually has a time-boxed rate limit of 512 requests per 60 seconds.
+
+![](assets/adsbdb_limits.png)
+
+So, we'll need to add some request throttling. Luckily ```httr2``` makes it really easy to do that with ```req_throttle()```, which you can learn more about [here](https://httr2.r-lib.org/reference/req_throttle.html). We'll need to specify one parameter, ```capacity```, which sets the number of requests we can make in a time period, ```fill_time_s```, measured in seconds. ```fill_time_s``` conveniently defaults to ```60```. That gives us this line:
+
+```{r, eval=FALSE}
+... |> req_throttle(capacity = 500)
+```
+
+We could set it to 512 exact. I put it to 500 just to add some buffer. That changes our functions above to this:
+
+```{r}
+get_icao24_from_registration <- function(registration, return_tibble = TRUE) {
+  tryCatch(
+    {
+      icao24 <- request("https://api.adsbdb.com/v0/n-number/") |>
+        req_url_path_append(registration) |>
+        req_throttle(capacity = 500) |>
+        req_perform() |>
+        resp_body_json()
+
+      if (return_tibble) {
+        return(as_tibble(icao24$response) |> rename(icao24 = value))
+      } else {
+        return(icao24$response)
+      }
+    },
+    error = function(e) {
+      log_error("{registration} encountered error {e}")
+      return(NULL)
+    }
+  )
+}
+
+get_registration_from_icao24 <- function(icao24, return_tibble = TRUE) {
+  tryCatch(
+    {
+      registration <- request("https://api.adsbdb.com/v0/mode-s/") |>
+        req_url_path_append(icao24) |>
+        req_throttle(capacity = 500) |>
+        req_perform() |>
+        resp_body_json()
+
+      if (return_tibble) {
+        return(as_tibble(registration$response) |> rename(registration = value))
+      } else {
+        return(registration$response)
+      }
+    },
+    error = function(e) {
+      log_error("{icao24} encountered error {e}")
+      return(NULL)
+    }
+  )
+}
+```
+
+:::
+
 ### Interacting with the adsb.lol API
 The adsb.lol is a little trickier but still fairly friendly. Instead of ```req_url_path_append()```, we've got to use ```req_body_json()```, since the adsb.lol's routeset endpoint only accepts requests formatted as JSON. Here's the schema from the docs:
 
