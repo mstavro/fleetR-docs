@@ -462,6 +462,7 @@ Important
 <span id="cb15-42"><a href="#cb15-42" aria-hidden="true" tabindex="-1"></a>  )</span>
 <span id="cb15-43"><a href="#cb15-43" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>Note that, as of the time of writing, there’s currently a <a href="https://github.com/r-lib/httr2/issues/801">bug in httr2 where the token bucket in <code>req_throttle</code> gets reset every time the request function is called</a>, so you may still run into 429 issues until a fix is issued. In the meantime, see the commentary in that GitHub issue for ways to get around this bug.</p>
 </div>
 </div>
 </section>
@@ -580,7 +581,7 @@ Important
 [1] "881"
 
 [[1]]$plausible
-[1] 1</code></pre>
+[1] 0</code></pre>
 </div>
 </div>
 <p>Yeah, that doesn’t look very tidy. Well, they do say that most of data work is cleaning. Let’s see if we can massage this a bit. Looks like everything is stored under <code>[[1]]</code>, so let’s get <code>route[[1]]</code> and try putting it into a tibble.</p>
