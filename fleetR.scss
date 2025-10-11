@@ -32,3 +32,9 @@ body .maplibregl-popup-content {
     overflow-x: auto !important;
     overflow-y: auto !important;
 }
+
+.gt_heading img {
+  max-width: 100%;
+  height: auto;
+  min-width: 50px;
+}
