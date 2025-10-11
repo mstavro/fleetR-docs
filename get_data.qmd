@@ -244,7 +244,7 @@ get_registration_from_icao24 <- function(icao24, return_tibble = TRUE) {
 }
 ```
 
-Note that, as of the time of writing, there's currently a [bug in httr2 where the token bucket in ```req_throttle``` gets reset every time the function is called](https://github.com/r-lib/httr2/issues/801), so you may still run into 429 issues until a fix is issued. In the meantime, see the commentary in that GitHub issue for ways to get around this bug.
+Note that, as of the time of writing, there's currently a [bug in httr2 where the token bucket in ```req_throttle``` gets reset every time the request function is called](https://github.com/r-lib/httr2/issues/801), so you may still run into 429 issues until a fix is issued. In the meantime, see the commentary in that GitHub issue for ways to get around this bug.
 :::
 
 ### Interacting with the adsb.lol API
