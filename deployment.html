@@ -207,7 +207,11 @@ ul.task-list li input[type="checkbox"] {
 <h2 data-number="6.1" class="anchored" data-anchor-id="putting-into-quarto-and-styling"><span class="header-section-number">6.1</span> Putting into Quarto and Styling</h2>
 <p>Before we talk about GitHub pages, you’re going to want to put the pieces we’ve assembled in the previous chapters into a Quarto document - specifically, the web development pieces that came out of <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a> and <a href="map_tables.html#sec-many-tables" class="quarto-xref"><span>Section 5.3</span></a>. I’ve got an example for you to use <a href="https://github.com/mstavro/united-explorer/blob/main/index.qmd">here</a>.</p>
 <p>Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in <a href="map_tables.html#sec-map-table" class="quarto-xref"><span>Section 5.1</span></a>, but here’s the full SCSS you might want to have:</p>
-<pre><code>$navbar-bg: black;
+<pre><code>/* fleetR.scss */
+
+/*-- scss:defaults --*/
+// Variable definitions go here
+$navbar-bg: black;
 $navbar-fg: white;
 
 /*-- scss:rules --*/
@@ -236,6 +240,13 @@ body .maplibregl-popup {
 body .maplibregl-popup-content {
     overflow-x: auto !important;
     overflow-y: auto !important;
+}
+
+@media screen and (max-width: 900px) {
+    .gt_heading img {
+    max-width: 100%;
+    height: auto !important;
+    }
 }</code></pre>
 <p>Additionally, you might want to use a <code>_brand.yml</code> file. You could make a mock <code>_brand.yml</code> for your airline of choice, like United:</p>
 <pre><code>meta:
