@@ -1816,7 +1816,7 @@ main_tbl <- main_tbl |>
 main_tbl
 ```
 
-That's a lot better. But I have no idea what some of these IFE/Wi-Fi options mean. Maybe we can fix that with ```bslib::tooltip()``` and ```text_replace()```?
+That's a lot better. But I have no idea what some of these IFE/Wi-Fi options mean. And I'm the guy making the table, so if I can't make out what *AVOD/DTV* means, then my audience probably can't either (again, assumption, but probably a fair one). Maybe we can fix that with ```bslib::tooltip()``` and ```text_replace()```?
 
 Let's try adding these lines:
 
