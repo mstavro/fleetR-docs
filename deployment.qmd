@@ -7,6 +7,10 @@ Before we talk about GitHub pages, you're going to want to put the pieces we've 
 Another interject: I neglected to share some styling things to spruce up your dashboard before deployment. I mentioned SCSS rules in @sec-map-table, but here's the full SCSS you might want to have:
 
 ```
+/* fleetR.scss */
+
+/*-- scss:defaults --*/
+// Variable definitions go here
 $navbar-bg: black;
 $navbar-fg: white;
 
@@ -36,6 +40,13 @@ body .maplibregl-popup {
 body .maplibregl-popup-content {
     overflow-x: auto !important;
     overflow-y: auto !important;
+}
+
+@media screen and (max-width: 900px) {
+    .gt_heading img {
+    max-width: 100%;
+    height: auto !important;
+    }
 }
 ```
 

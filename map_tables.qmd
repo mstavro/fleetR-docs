@@ -1437,7 +1437,24 @@ body .maplibregl-popup-content {
 }
 ```
 
-... with ```@media screen``` being used to scale the width of the pop-up to different display sizes, using a mobile first approach (greater width on smaller screens to try and get the map as large as possible).
+... with ```@media screen``` being used to scale the width of the pop-up to different display sizes, using a mobile first approach (greater width on smaller screens to try and get the map as large as possible without being completely obscured by the table).
+
+:::{.callout-tip}
+Hi reader. Future me here. You'll notice that if you implement this code as-written that on small displays, you'll still have to scroll the table pop-up within the map. I'd encourage you to run two pieces of the code and try this out for yourself: the chunk that produces the table standalone, i.e., in the main body of the Quarto document, and then the code with the map table pop-up. You should hopefully see that while the standalone table in the main body of the document scales down (by squishing the aircraft image to fit the page width), the table inside of the map doesn't actually scale. Instead, it relies on the overflow-x property for users on small screens to scroll horizontally.
+
+This is fine, but seeing as we have a perfectly working table example that scales responsively, and seeing how phones are everywhere, it feels like a shame to not optimize for mobile portrait orientation by getting this scaling into our map somehow. To that end, we can try adding this bit of CSS to our .scss file:
+
+```{scss}
+@media screen and (max-width: 900px) {
+    .gt_heading img {
+    max-width: 100%;
+    height: auto !important;
+    }
+}
+```
+
+... where this SCSS rule will tell all instances of images inside of gt headers to set their max-width to 100% of the parent container (in this case, the maplibre pop-up container), and to scale height according to width, i.e., maintain aspect ratio. Why is height marked important? Because of our argument earlier to ```web_image()``` setting aircraft image height to 9em. For small devices, we want to reject this rule, overriding it with "auto."
+:::
 
 ## One Last Table - Well, Actually, a Table of Tables {#sec-many-tables}
 Remember the compromise I discussed in @sec-tolled-boxes about not being able to show the entire fleet? The compromise I landed on is showing a few planes in the air, and then showing details about all the active aircraft in United's fleet based on the Google sheet we pulled on a separate page called "Full Fleet Information" on my Shiny app. You're actually well equipped to recreate just about the entire table given what we learned from the map table, which is debatably more complicated than this one. The interactive full fleet table is more straightforward, leveraging the aircraft images and seatmaps we pulled from United's CDN.
