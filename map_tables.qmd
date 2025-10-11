@@ -231,7 +231,7 @@ This is a lot more readable. But now I feel like we're missing some cool informa
 Let's iron out what these value boxes should look like first.
 
 :::{.callout-important}
-Note that once you start incorporating Bootstrap (```bslib```) elements into your gt tables, i.e., tooltips, popovers, value boxes, so forth, you can't rely on simply outputting the gt table to Positron's or RStudio's viewer to give you an accurate depiction of the table. If you do, you'll find that the Bootstrap elements are conspicuously missing. And if you're like me, you'll assume you did something wrong, waste about 30 minutes worth of work thinking it's completely broken, and then suddenly realize you need to actually render a Quarto document with your code to see if it works or not. 
+Note that once you start incorporating Bootstrap (```bslib```) elements into your gt tables, i.e., tooltips, popovers, value boxes, so forth, you can't rely on simply outputting the gt table object to Positron's or RStudio's viewer to give you an accurate depiction of the table. If you do, you'll find that the Bootstrap elements are conspicuously missing. And if you're like me, you'll assume you did something wrong, waste about 30 minutes worth of work thinking it's completely broken, and then suddenly realize you need to actually render a Quarto document with your code to see if it works or not. 
 
 So suffice this to say that once you involve Bootstrap, you'll need to render your table inside a full-on Quarto document so that your Bootstrap components actually initialize. You can rely on the viewer insofar as it's depicting a Quarto Preview server.
 :::
