@@ -1,4 +1,4 @@
-/* united.scss */
+/* fleetR.scss */
 
 /*-- scss:defaults --*/
 // Variable definitions go here
@@ -31,4 +31,11 @@ body .maplibregl-popup {
 body .maplibregl-popup-content {
     overflow-x: auto !important;
     overflow-y: auto !important;
+}
+
+@media screen and (max-width: 900px) {
+    .gt_heading img {
+    max-width: 100%;
+    height: auto !important;
+    }
 }

@@ -45,7 +45,7 @@ Thus, we're at one of our major decision points with several considerations befo
 - Planes are constantly on the move, so there's not much utility in displaying information that's quickly outdated.
 - How do we actually get information from planes that are in the air?
 
-After some thinking, the solution I came up with was the following: **take a random sample of United's active mainline fleet (say, 10 aircraft) at a given time interval (say, 30 minutes), and query OpenSky for that random sample.**
+After some thinking, the solution I came up with was the following: **take a random sample of United's active mainline fleet (say, 10 aircraft as of the time of writing this) at a given time interval (say, 30 minutes), and query OpenSky for that random sample.**
 
 This approach has the following pros:
 

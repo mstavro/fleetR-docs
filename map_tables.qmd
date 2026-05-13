@@ -230,6 +230,13 @@ This is a lot more readable. But now I feel like we're missing some cool informa
 
 Let's iron out what these value boxes should look like first.
 
+:::{.callout-important}
+Note that once you start incorporating Bootstrap (```bslib```) elements into your gt tables, i.e., tooltips, popovers, value boxes, so forth, you can't rely on simply outputting the gt table object to Positron's or RStudio's viewer to give you an accurate depiction of the table. If you do, you'll find that the Bootstrap elements are conspicuously missing. And if you're like me, you'll assume you did something wrong, waste about 30 minutes worth of work thinking it's completely broken, and then suddenly realize you need to actually render a Quarto document with your code to see if it works or not. 
+
+So suffice this to say that once you involve Bootstrap, you'll need to render your table inside a full-on Quarto document so that your Bootstrap components actually initialize. You can rely on the viewer insofar as it's depicting a Quarto Preview server.
+:::
+
+
 ```{r}
 library(bslib)
 library(fontawesome)
@@ -1258,6 +1265,10 @@ united_10_positions <- bind_rows(
 
 ```united_explore_10``` simply picks 10 random flights to query from the ```compatible_registrations``` list, which we made in @sec-fleet. That's because, up until we made that list, we didn't actually have the information necessary to comprehensively pull from United's active mainline fleet. And the reason we're only pulling 10 is further documented in @sec-tolled-boxes, but basically the long-and-short is we have limited API credits, and we can't just pull the whole fleet, so a random sample of 10 is the compromise I landed on. The API limit is also why I'm demonstrating/executing the code using static parquet files here in Quarto. You're free to adjust this as you like, just make sure to change the ```slice_sample(n = 10)``` row, or, if you're feeling adventurous, delete it entirely I guess. As they say, enjoy responsibly.
 
+Note that if you *do* increase the number of aircraft you want to pull, you'll likely need to add some cooldown time between your API requests, else you'll run into a rate limit of the OpenSky API. Even though the OpenSky API doesn't include anything about limiting requests in a certain period of time, I find that you start running into a 429 response when you run the script as-is on more than about 30 aircraft or so. In our box analogy, the OpenSky team doesn't want you rolling up to their box, scooping up a bunch of stuff and then running off with it. It's almost Halloween as of the time of writing, and it wouldn't be very courteous of you to take the whole bowl of candy when there's a line of people taking only a few pieces at once. The same goes for our API access. 
+
+When you do get rate limited, you'll probably get a 429/503 response. ```req_perform()``` actually retries by default if it encounters this code, but you'll probably just get a 429 again if you've burned up too many requests in a time window. In that case, I'd recommend taking a look at ```req_throttle()``` and its [documentation](https://httr2.r-lib.org/reference/req_throttle.html).
+
 :::
 
 Let's make sure that everything in tracks is actually also in positions, since we'll assign the tooltip/hover functionality to positions, and not tracks:
@@ -1433,7 +1444,24 @@ body .maplibregl-popup-content {
 }
 ```
 
-... with ```@media screen``` being used to scale the width of the pop-up to different display sizes, using a mobile first approach (greater width on smaller screens to try and get the map as large as possible).
+... with ```@media screen``` being used to scale the width of the pop-up to different display sizes, using a mobile first approach (greater width on smaller screens to try and get the map as large as possible without being completely obscured by the table).
+
+:::{.callout-tip}
+Hi reader. Future me here. You'll notice that if you implement this code as-written that on small displays, you'll still have to scroll the table pop-up within the map. I'd encourage you to run two pieces of the code and try this out for yourself: the chunk that produces the table standalone, i.e., in the main body of the Quarto document, and then the code with the map table pop-up. You should hopefully see that while the standalone table in the main body of the document scales down (by squishing the aircraft image to fit the page width), the table inside of the map doesn't actually scale. Instead, it relies on the overflow-x property for users on small screens to scroll horizontally.
+
+This is fine, but seeing as we have a perfectly working table example that scales responsively, and seeing how phones are everywhere, it feels like a shame to not optimize for mobile portrait orientation by getting this scaling into our map somehow. To that end, we can try adding this bit of CSS to our .scss file:
+
+```{scss}
+@media screen and (max-width: 900px) {
+    .gt_heading img {
+    max-width: 100%;
+    height: auto !important;
+    }
+}
+```
+
+... where this SCSS rule will tell all instances of images inside of gt headers to set their max-width to 100% of the parent container (in this case, the maplibre pop-up container), and to scale height according to width, i.e., maintain aspect ratio. Why is height marked important? Because of our argument earlier to ```web_image()``` setting aircraft image height to 9em. For small devices, we want to reject this rule, overriding it with "auto."
+:::
 
 ## One Last Table - Well, Actually, a Table of Tables {#sec-many-tables}
 Remember the compromise I discussed in @sec-tolled-boxes about not being able to show the entire fleet? The compromise I landed on is showing a few planes in the air, and then showing details about all the active aircraft in United's fleet based on the Google sheet we pulled on a separate page called "Full Fleet Information" on my Shiny app. You're actually well equipped to recreate just about the entire table given what we learned from the map table, which is debatably more complicated than this one. The interactive full fleet table is more straightforward, leveraging the aircraft images and seatmaps we pulled from United's CDN.
@@ -1788,7 +1816,7 @@ main_tbl <- main_tbl |>
 main_tbl
 ```
 
-That's a lot better. But I have no idea what some of these IFE/Wi-Fi options mean. Maybe we can fix that with ```bslib::tooltip()``` and ```text_replace()```?
+That's a lot better. But I have no idea what some of these IFE/Wi-Fi options mean. And I'm the guy making the table, so if I can't make out what *AVOD/DTV* means, then my audience probably can't either (again, assumption, but probably a fair one). Maybe we can fix that with ```bslib::tooltip()``` and ```text_replace()```?
 
 Let's try adding these lines:
 

@@ -8,8 +8,8 @@ Great question. And it was the same question I asked myself up until about a wee
 
 I think the simplest way to explain this part of the process is just to characterize it as leveraging your interests and stubbornness. As in, pick a project idea you actually want to do, and that you're likely to be committed enough to the sunk cost fallacy in order to see through until the end after the countless bouts of frustration that lie before you.[^1]
 
-## Why Track the United Fleet?
-I'm an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There's probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I've flown United recently, so I guess there's some recency bias at play.
+## Why Track an Airline Fleet?
+I'm an aviation nerd. It really boils down to that. Before I took up the political science/philosophy route I was interested in becoming an aerospace engineer. There's probably a bunch of aphorisms I could pick here about plans and the universe, so here we are; I still have the interest. It helps that I've flown United recently, so I guess there's some recency bias at play as to why I chose United as the airline used in this entry. Hopefully after reading through the documentation, especially @sec-fleet and @sec-custom-fleet, you'll find that this project is extensible, in the sense that you can replicate my steps to substitute United for an airline (or airlines!) of your choosing.
 
 Web development for R also is an area of interest for me. I'm really impressed at how far the ecosystem stretches with Quarto and Shiny. What's more impressive is how certain packages work together with others in unexpected ways (spoiler: mapgl and gt!) that can produce some really cool outcomes. It's kind of like snapping Lego bricks together.[^2] Naturally, I wanted to see how far these Lego bricks could go, i.e., could I build something that kind of mimicked flight tracking websites like FlightAware, FlightRadar24, etc., using said Lego bricks? Well we're about to find out!
 
