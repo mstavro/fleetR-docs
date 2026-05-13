@@ -4,7 +4,7 @@ I did. Guilty as charged. It's time to actually make some tables!
 ## The Map Table Function {#sec-map-table}
 Spoiler: we're going to write a function that'll produce gt tables for each aircraft in our dataset. Why? Well, it has to do a little bit with how ```mapgl``` works.
 
-Sidebar that ```mapgl``` is a very cool package that brings Maplibre and Mapbox mapping capabilities to R, specifically for Quarto and Shiny apps. Maplibre and Mapbox provide functionality for tables that show up on-hover and on-click over geometric features. Maybe I haven't scoured the internet long enough, but, generally, when I see a table in a ```mapgl``` map, it looks something like this:
+Sidebar that ```mapgl``` is a very cool package that brings Maplibre and Mapbox mapping capabilities to R, specifically for Quarto and Shiny apps. Maplibre and Mapbox provide functionality for tables that show up on-hover and on-click over geometric features. Maybe I haven't scoured the internet long enough[^1], but, generally, when I see a table in a ```mapgl``` map, it looks something like this:
 
 ![](assets/mapgl_table_example.png)
 
@@ -2061,4 +2061,6 @@ main_tbl
 
 Awesome. I think we're ready to move onto the final step: deploying our work!
 
-[^1]: You might be wondering what the point of even putting it into the coordinates was in the first place. Originally, I thought I'd be able to map the z-offset, until I learned it's a Mapbox only feature, and Mapbox has its own API/cost requirements. So, for those of you using Mapbox, the option is still there with the ```z-offset``` argument.
+[^1]: I'd be remiss (enough so that I came back several months after I did this project just to add this footnote) if not to mention that [Gabe Osterhout and Andrew Heiss actually did this in Leaflet for a cool visualization of election results and showed it off at posit::conf(2025).](https://www.youtube.com/watch?v=UCloM4GcfVY)
+
+[^2]: You might be wondering what the point of even putting it into the coordinates was in the first place. Originally, I thought I'd be able to map the z-offset, until I learned it's a Mapbox only feature, and Mapbox has its own API/cost requirements. So, for those of you using Mapbox, the option is still there with the ```z-offset``` argument.
